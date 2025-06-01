@@ -19,14 +19,19 @@ const (
 // This init function will register handlers for device-related API endpoints.
 func init() {
 	mockCreateDeviceGroupResponse := loadMockResponse("create_devicegroup_201.json")
+	mockDeleteDeviceGroupResponse := loadMockResponse("delete_devicegroup_200.json")
 	mockGetDeviceGroupsResponse := loadMockResponse("get_devicegroups_200.json")
 	mockUpdateDeviceGroupResponse := loadMockResponse("update_devicegroup_200.json")
 
-	// Handler for /api/v0/devices/:id endpoint
 	mux.HandleFunc(testEndpointDeviceGroup, func(w http.ResponseWriter, r *http.Request) {
 		var err error
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
+		case http.MethodDelete:
+			_, err = w.Write(mockDeleteDeviceGroupResponse)
+		case http.MethodGet:
+			// uses the same response as GetDeviceGroups since there is no relevant /devicegroups/:id endpoint in the API
+			_, err = w.Write(mockGetDeviceGroupsResponse)
 		case http.MethodPatch:
 			_, err = w.Write(mockUpdateDeviceGroupResponse)
 		default:
@@ -39,7 +44,6 @@ func init() {
 		}
 	})
 
-	// Handler for the /api/v0/devices endpoint
 	mux.HandleFunc(testEndpointDeviceGroups, func(w http.ResponseWriter, r *http.Request) {
 		var err error
 		w.Header().Set("Content-Type", "application/json")
@@ -58,6 +62,26 @@ func init() {
 			http.Error(w, "Failed to write response", http.StatusInternalServerError)
 		}
 	})
+}
+
+func TestClient_GetDeviceGroup(t *testing.T) {
+	r := require.New(t)
+
+	r.NotNil(testAPIClient, "Global testAPIClient should be initialized")
+
+	groupResp, err := testAPIClient.GetDeviceGroup("4")
+
+	r.NoError(err, "GetDeviceGroup returned an error")
+	r.NotNil(groupResp, "GetDeviceGroup response is nil")
+
+	r.Equal("ok", groupResp.Status, "Expected status 'ok'")
+	r.Equal(1, groupResp.Count, "Expected count 1")
+	r.Len(groupResp.Groups, 1, "Expected 1 device groups")
+
+	group := groupResp.Groups[0]
+	r.Equal(4, group.ID, "Expected GroupID 4")
+	r.Equal("NestedRules", group.Name, "Expected Group 'NestedRules'")
+
 }
 
 func TestClient_GetDeviceGroups(t *testing.T) {
@@ -115,6 +139,19 @@ func TestClient_CreateDeviceGroup(t *testing.T) {
 
 	r.Equal("ok", createResp.Status, "Expected status 'ok'")
 	r.Equal(4, createResp.ID, "Expected ID 4")
+}
+
+func TestClient_DeleteDeviceGroup(t *testing.T) {
+	r := require.New(t)
+
+	r.NotNil(testAPIClient, "Global testAPIClient should be initialized")
+
+	resp, err := testAPIClient.DeleteDeviceGroup("4")
+
+	r.NoError(err, "DeleteDeviceGroup returned an error")
+	r.NotNil(resp, "DeleteDeviceGroup response is nil")
+
+	r.Equal("ok", resp.Status, "Expected status 'ok'")
 }
 
 func TestClient_UpdateDeviceGroup(t *testing.T) {

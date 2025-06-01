@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
 )
 
 const (
@@ -88,6 +89,56 @@ func (c *Client) CreateDeviceGroup(group *DeviceGroupCreateRequest) (*DeviceGrou
 	return resp, err
 }
 
+// DeleteDeviceGroup deletes a group by its ID or hostname from the LibreNMS API.
+//
+// Documentation: https://docs.librenms.org/API/DeviceGroups/#delete_devicegroup
+func (c *Client) DeleteDeviceGroup(identifier string) (*BaseResponse, error) {
+	uri, err := url.Parse(fmt.Sprintf("%s/%s", deviceGroupEndpoint, identifier))
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse URI: %w", err)
+	}
+
+	req, err := c.newRequest(http.MethodDelete, uri.String(), nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	resp := new(BaseResponse)
+	err = c.do(req, resp)
+	return resp, err
+}
+
+// GetDeviceGroup uses the same endpoint as GetDeviceGroups, but it returns a
+// modified payload with the single host. This is primarily a convenience function
+// for the Terraform provider.
+func (c *Client) GetDeviceGroup(identifier string) (*DeviceGroupResponse, error) {
+	req, err := c.newRequest(http.MethodGet, deviceGroupEndpoint, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := new(DeviceGroupResponse)
+	err = c.do(req, resp)
+	if err != nil {
+		return resp, err
+	}
+
+	singleGroupResp := &DeviceGroupResponse{
+		Groups: make([]DeviceGroup, 0),
+	}
+	singleGroupResp.Message = resp.Message
+	singleGroupResp.Status = resp.Status
+	singleGroupResp.Count = 1
+
+	for _, group := range resp.Groups {
+		if group.Name == identifier || strconv.Itoa(group.ID) == identifier {
+			singleGroupResp.Groups = append(singleGroupResp.Groups, group)
+			break
+		}
+	}
+
+	return singleGroupResp, err
+}
+
 // GetDeviceGroups retrieves a list of device groups from the LibreNMS API.
 //
 // For whatever reason, there is no equivalent GetDeviceGroup endpoint.
@@ -107,7 +158,7 @@ func (c *Client) GetDeviceGroups() (*DeviceGroupResponse, error) {
 
 // UpdateDeviceGroup updates an existing device group in the LibreNMS API.
 //
-// The documentation states it uses name rather than ID to reference the group, but both seem to work (as of 25.5).
+// The documentation states it uses name rather than ID to reference the group, but both seem to work (as of v25.5).
 // Documentation: https://docs.librenms.org/API/DeviceGroups/#update_devicegroup
 func (c *Client) UpdateDeviceGroup(identifier string, payload *DeviceGroupUpdateRequest) (*BaseResponse, error) {
 	uri, err := url.Parse(fmt.Sprintf("%s/%s", deviceGroupEndpoint, identifier))
