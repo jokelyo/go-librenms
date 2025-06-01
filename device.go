@@ -63,7 +63,7 @@ type (
 		Timeout                 *int     `json:"timeout"`
 		Transport               string   `json:"transport"`
 		Type                    string   `json:"type"`
-		Uptime                  *string  `json:"uptime"`
+		Uptime                  *int64   `json:"uptime"`
 		Version                 *string  `json:"version"`
 	}
 
