@@ -60,7 +60,14 @@ type (
 		Type        string  `json:"type"`
 	}
 
-	DeviceGroupUpdateRequest DeviceGroupCreateRequest
+	// DeviceGroupUpdateRequest represents the request payload for updating a device group.
+	DeviceGroupUpdateRequest struct {
+		Name        string  `json:"name,omitempty"`
+		Description *string `json:"desc,omitempty"`
+		Devices     []int   `json:"devices,omitempty"`
+		Rules       *string `json:"rules,omitempty"`
+		Type        string  `json:"type,omitempty"`
+	}
 
 	// DeviceGroupResponse represents a response containing a list of device groups from the LibreNMS API.
 	DeviceGroupResponse struct {
