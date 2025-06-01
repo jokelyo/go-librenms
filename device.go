@@ -120,6 +120,19 @@ func (c *Client) CreateDevice(payload *DeviceCreateRequest) (*DeviceResponse, er
 	return deviceResp, err
 }
 
+// DeleteDevice deletes a device by its ID or hostname from the LibreNMS API.
+//
+// Documentation: https://docs.librenms.org/API/Devices/#del_device
+func (c *Client) DeleteDevice(identifier string) (*DeviceResponse, error) {
+	req, err := c.newRequest(http.MethodDelete, "devices/"+identifier, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	deviceResp := new(DeviceResponse)
+	err = c.do(req, deviceResp)
+	return deviceResp, err
+}
+
 // GetDevice retrieves a device by its ID or hostname from the LibreNMS API.
 //
 // Documentation: https://docs.librenms.org/API/Devices/#get_device
