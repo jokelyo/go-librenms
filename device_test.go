@@ -10,6 +10,12 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const (
+	testEndpointDevices      = "/api/v0/devices"
+	testEndpointDevicesSlash = "/api/v0/devices/"
+	testEndpointDevice       = "/api/v0/devices/1.1.1.1"
+)
+
 // This init function will register handlers for device-related API endpoints.
 func init() {
 	mockGetDeviceResponse := loadMockResponse("get_device_200.json")
@@ -19,7 +25,7 @@ func init() {
 	mockUpdateDeviceResponse := loadMockResponse("update_device_200.json")
 
 	// Handler for /api/v0/devices/:id endpoint
-	mux.HandleFunc("/api/v0/devices/1.1.1.1", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(testEndpointDevice, func(w http.ResponseWriter, r *http.Request) {
 		var err error
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
@@ -30,7 +36,7 @@ func init() {
 		case http.MethodPatch:
 			_, err = w.Write(mockUpdateDeviceResponse)
 		default:
-			http.Error(w, fmt.Sprintf("Method %s not implemented for /api/v0/devices.", r.Method), http.StatusMethodNotAllowed)
+			http.Error(w, fmt.Sprintf("Method %s not implemented for %s.", testEndpointDevice, r.Method), http.StatusMethodNotAllowed)
 			return
 		}
 		if err != nil {
@@ -40,14 +46,14 @@ func init() {
 	})
 
 	// Handler for the /api/v0/devices/ endpoint
-	mux.HandleFunc("/api/v0/devices/", func(w http.ResponseWriter, r *http.Request) { // Added trailing slash
+	mux.HandleFunc(testEndpointDevicesSlash, func(w http.ResponseWriter, r *http.Request) { // Added trailing slash
 		var err error
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
 		case http.MethodPost:
 			_, err = w.Write(mockCreateDeviceResponse)
 		default: // Catches GET and any other methods for /api/v0/devices
-			http.Error(w, fmt.Sprintf("Method %s not implemented for /api/v0/devices/.", r.Method), http.StatusMethodNotAllowed)
+			http.Error(w, fmt.Sprintf("Method %s not implemented for %s.", testEndpointDevicesSlash, r.Method), http.StatusMethodNotAllowed)
 			return
 		}
 		if err != nil {
@@ -57,14 +63,14 @@ func init() {
 	})
 
 	// Handler for the /api/v0/devices endpoint
-	mux.HandleFunc("/api/v0/devices", func(w http.ResponseWriter, r *http.Request) { // Added trailing slash
+	mux.HandleFunc(testEndpointDevices, func(w http.ResponseWriter, r *http.Request) { // Added trailing slash
 		var err error
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
 		case http.MethodGet:
 			_, err = w.Write(mockGetDevicesResponse)
 		default:
-			http.Error(w, fmt.Sprintf("Method %s not implemented for /api/v0/devices.", r.Method), http.StatusMethodNotAllowed)
+			http.Error(w, fmt.Sprintf("Method %s not implemented for %s.", testEndpointDevices, r.Method), http.StatusMethodNotAllowed)
 			return
 		}
 		if err != nil {

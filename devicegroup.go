@@ -2,7 +2,9 @@ package librenms
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"net/url"
 )
 
 const (
@@ -57,6 +59,8 @@ type (
 		Type        string   `json:"type"`
 	}
 
+	DeviceGroupUpdateRequest DeviceGroupCreateRequest
+
 	// DeviceGroupResponse represents a response containing a list of device groups from the LibreNMS API.
 	DeviceGroupResponse struct {
 		BaseResponse
@@ -97,6 +101,26 @@ func (c *Client) GetDeviceGroups() (*DeviceGroupResponse, error) {
 	}
 
 	resp := new(DeviceGroupResponse)
+	err = c.do(req, resp)
+	return resp, err
+}
+
+// UpdateDeviceGroup updates an existing device group in the LibreNMS API.
+//
+// The documentation states it uses name rather than ID to reference the group, but both seem to work (as of 25.5).
+// Documentation: https://docs.librenms.org/API/DeviceGroups/#update_devicegroup
+func (c *Client) UpdateDeviceGroup(identifier string, payload *DeviceGroupUpdateRequest) (*BaseResponse, error) {
+	uri, err := url.Parse(fmt.Sprintf("%s/%s", deviceGroupEndpoint, identifier))
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse URI: %w", err)
+	}
+
+	req, err := c.newRequest(http.MethodPatch, uri.String(), payload, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := new(BaseResponse)
 	err = c.do(req, resp)
 	return resp, err
 }
