@@ -39,16 +39,31 @@ func init() {
 		}
 	})
 
-	// Handler for the /api/v0/devices endpoint
+	// Handler for the /api/v0/devices/ endpoint
 	mux.HandleFunc("/api/v0/devices/", func(w http.ResponseWriter, r *http.Request) { // Added trailing slash
+		var err error
+		w.Header().Set("Content-Type", "application/json")
+		switch r.Method {
+		case http.MethodPost:
+			_, err = w.Write(mockCreateDeviceResponse)
+		default: // Catches GET and any other methods for /api/v0/devices
+			http.Error(w, fmt.Sprintf("Method %s not implemented for /api/v0/devices/.", r.Method), http.StatusMethodNotAllowed)
+			return
+		}
+		if err != nil {
+			log.Printf("Error writing response: %v", err)
+			http.Error(w, "Failed to write response", http.StatusInternalServerError)
+		}
+	})
+
+	// Handler for the /api/v0/devices endpoint
+	mux.HandleFunc("/api/v0/devices", func(w http.ResponseWriter, r *http.Request) { // Added trailing slash
 		var err error
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
 		case http.MethodGet:
 			_, err = w.Write(mockGetDevicesResponse)
-		case http.MethodPost:
-			_, err = w.Write(mockCreateDeviceResponse)
-		default: // Catches GET and any other methods for /api/v0/devices
+		default:
 			http.Error(w, fmt.Sprintf("Method %s not implemented for /api/v0/devices.", r.Method), http.StatusMethodNotAllowed)
 			return
 		}
