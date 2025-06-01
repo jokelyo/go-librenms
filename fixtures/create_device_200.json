@@ -1,0 +1,27 @@
+{
+	"count": 1,
+	"devices": [
+		{
+			"authalgo": null,
+			"authlevel": null,
+			"authname": null,
+			"community": "public",
+			"cryptoalgo": null,
+			"cryptopass": null,
+			"device_id": 4,
+			"hostname": "192.168.10.5",
+			"os": "linux",
+			"poller_group": 0,
+			"port": 161,
+			"port_association_mode": 1,
+			"snmpver": "v2c",
+			"status_reason": "",
+			"sysDescr": "Linux compute-vm-2 5.10.0-34-cloud-amd64 #1 SMP Debian 5.10.234-1 (2025-02-24) x86_64",
+			"sysName": "compute-vm-2",
+			"sysObjectID": ".1.3.6.1.4.1.8072.3.2.10",
+			"transport": "udp"
+		}
+	],
+	"message": "Device 192.168.10.5 (4) has been added successfully",
+	"status": "ok"
+}

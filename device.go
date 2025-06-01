@@ -1,7 +1,6 @@
 package librenms
 
 import (
-	"fmt"
 	"net/http"
 )
 
@@ -68,6 +67,33 @@ type (
 		Version                 *string  `json:"version"`
 	}
 
+	// DeviceCreateRequest represents the request body for creating a new device in LibreNMS.
+	DeviceCreateRequest struct {
+		Hostname            string `json:"hostname"`
+		Display             string `json:"display,omitempty"`
+		ForceAdd            bool   `json:"force_add,omitempty"`
+		Hardware            string `json:"hardware,omitempty"`
+		Location            string `json:"location,omitempty"`
+		LocationID          int    `json:"location_id,omitempty"`
+		OS                  string `json:"os,omitempty"`
+		OverrideSysLocation bool   `json:"override_sysLocation,omitempty"`
+		PingFallback        bool   `json:"ping_fallback,omitempty"`
+		PollerGroup         int    `json:"poller_group,omitempty"`
+		Port                int    `json:"port,omitempty"`
+		PortAssocMode       string `json:"port_association_mode,omitempty"`
+		SNMPAuthAlgo        string `json:"authalgo,omitempty"`  // MD5, SHA, SHA-224, SHA-256, SHA384, SHA-512
+		SNMPAuthLevel       string `json:"authlevel,omitempty"` // noAuthNoPriv, authNoPriv, authPriv
+		SNMPAuthName        string `json:"authname,omitempty"`
+		SNMPAuthPass        string `json:"authpass,omitempty"`
+		SNMPCrytoAlgo       string `json:"cryptoalgo,omitempty"` // DES, AES, AES-192, AES-256, AES-256-C
+		SNMPCryptoPass      string `json:"cryptopass,omitempty"`
+		SNMPCommunity       string `json:"community,omitempty"`
+		SNMPDisable         bool   `json:"snmp_disable,omitempty"`
+		SNMPVersion         string `json:"snmpver,omitempty"` // v1, v2c, v3
+		SysName             string `json:"sysName,omitempty"`
+		Transport           string `json:"transport,omitempty"`
+	}
+
 	// DeviceResponse represents a response containing a list of devices from the LibreNMS API.
 	DeviceResponse struct {
 		BaseResponse
@@ -75,17 +101,22 @@ type (
 	}
 )
 
+// CreateDevice creates a device by hostname/IP.
+func (c *Client) CreateDevice(payload *DeviceCreateRequest) (*DeviceResponse, error) {
+	req, err := c.newRequest(http.MethodPost, "devices/", payload, nil)
+	if err != nil {
+		return nil, err
+	}
+	deviceResp := new(DeviceResponse)
+	err = c.do(req, deviceResp)
+	return deviceResp, err
+}
+
 // GetDevice retrieves a device by its ID or hostname from the LibreNMS API.
 func (c *Client) GetDevice(identifier string) (*DeviceResponse, error) {
 	req, err := c.newRequest(http.MethodGet, "devices/"+identifier, nil, nil)
 	if err != nil {
 		return nil, err
-	}
-	fmt.Println("GetDevice: ", req.URL.String())
-	fmt.Println("GetDevice: ", req.Method)
-	for k, v := range req.Header {
-		fmt.Printf("GetDevice: %s: %v\n", k, v)
-		fmt.Println()
 	}
 	deviceResp := new(DeviceResponse)
 	err = c.do(req, deviceResp)
