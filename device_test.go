@@ -116,7 +116,7 @@ func TestClient_UpdateDevice(t *testing.T) {
 
 	payload := &librenms.DeviceUpdateRequest{
 		Field: []string{"hardware", "port_association_mode"},
-		Value: []any{"New Hardware", 2},
+		Data:  []any{"New Hardware", 2},
 	}
 	deviceResp, err := testAPIClient.UpdateDevice("1.1.1.1", payload)
 

@@ -97,7 +97,7 @@ type (
 	// DeviceUpdateRequest represents the request body for updating a device in LibreNMS.
 	DeviceUpdateRequest struct {
 		Field []string `json:"field"`
-		Value []any    `json:"value"`
+		Data  []any    `json:"data"`
 	}
 
 	// DeviceResponse represents a response containing a list of devices from the LibreNMS API.
