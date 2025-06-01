@@ -1,0 +1,4 @@
+{
+	"status": "error",
+	"message": "Could not ping \"compute-vm-2\" (Hostname did not resolve to IP)"
+}

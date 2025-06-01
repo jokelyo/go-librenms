@@ -20,8 +20,5 @@ func (e *ErrorResponse) Error() string {
 	if e.Message != "" {
 		errMsg += fmt.Sprintf(": %s", e.Message)
 	}
-	if e.Status != "" {
-		errMsg += fmt.Sprintf(" (status: %s)", e.Status)
-	}
 	return errMsg
 }

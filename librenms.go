@@ -6,12 +6,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/hashicorp/go-cleanhttp"
 	"io"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
+
+	"github.com/hashicorp/go-cleanhttp"
 )
 
 const (
@@ -178,7 +179,12 @@ func checkResponse(resp *http.Response) error {
 		}
 
 		body, err := io.ReadAll(resp.Body)
-		if err != nil && len(body) > 0 {
+		if err != nil {
+			errorResponse.Message = fmt.Sprintf("failed to read response body: %v", err)
+			return errorResponse
+		}
+
+		if len(body) > 0 {
 			if err = json.Unmarshal(body, errorResponse); err != nil {
 				errorResponse.Message = string(body)
 			}
