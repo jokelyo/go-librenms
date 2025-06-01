@@ -1,7 +1,13 @@
 package librenms
 
 import (
+	"fmt"
 	"net/http"
+)
+
+const (
+	// deviceEndpoint is the API endpoint for devices.
+	deviceEndpoint = "devices"
 )
 
 type (
@@ -126,7 +132,7 @@ type (
 //
 // Documentation: https://docs.librenms.org/API/Devices/#add_device
 func (c *Client) CreateDevice(payload *DeviceCreateRequest) (*DeviceResponse, error) {
-	req, err := c.newRequest(http.MethodPost, "devices/", payload, nil)
+	req, err := c.newRequest(http.MethodPost, fmt.Sprintf("%s/", deviceEndpoint), payload, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -139,7 +145,7 @@ func (c *Client) CreateDevice(payload *DeviceCreateRequest) (*DeviceResponse, er
 //
 // Documentation: https://docs.librenms.org/API/Devices/#del_device
 func (c *Client) DeleteDevice(identifier string) (*DeviceResponse, error) {
-	req, err := c.newRequest(http.MethodDelete, "devices/"+identifier, nil, nil)
+	req, err := c.newRequest(http.MethodDelete, fmt.Sprintf("%s/%s", deviceEndpoint, identifier), nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -152,7 +158,7 @@ func (c *Client) DeleteDevice(identifier string) (*DeviceResponse, error) {
 //
 // Documentation: https://docs.librenms.org/API/Devices/#get_device
 func (c *Client) GetDevice(identifier string) (*DeviceResponse, error) {
-	req, err := c.newRequest(http.MethodGet, "devices/"+identifier, nil, nil)
+	req, err := c.newRequest(http.MethodGet, fmt.Sprintf("%s/%s", deviceEndpoint, identifier), nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -170,7 +176,7 @@ func (c *Client) GetDevices(query *DevicesQuery) (*DeviceResponse, error) {
 		return nil, err
 	}
 
-	req, err := c.newRequest(http.MethodGet, "devices", nil, params)
+	req, err := c.newRequest(http.MethodGet, deviceEndpoint, nil, params)
 	if err != nil {
 		return nil, err
 	}
@@ -184,7 +190,7 @@ func (c *Client) GetDevices(query *DevicesQuery) (*DeviceResponse, error) {
 //
 // Documentation: https://docs.librenms.org/API/Devices/#update_device_field
 func (c *Client) UpdateDevice(identifier string, payload *DeviceUpdateRequest) (*BaseResponse, error) {
-	req, err := c.newRequest(http.MethodPatch, "devices/"+identifier, payload, nil)
+	req, err := c.newRequest(http.MethodPatch, fmt.Sprintf("%s/%s", deviceEndpoint, identifier), payload, nil)
 	if err != nil {
 		return nil, err
 	}
