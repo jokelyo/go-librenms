@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
-	"path/filepath"
 	"testing"
 
 	// Import the package under test
@@ -15,30 +13,21 @@ import (
 
 // This init function will register handlers for device-related API endpoints.
 func init() {
-	// Helper function to load mock JSON responses from the fixtures directory
-	loadMockResponse := func(filename string) []byte {
-		path := filepath.Join("fixtures", filename)
-		data, err := os.ReadFile(path)
-		if err != nil {
-			log.Fatalf("Failed to read mock response file '%s': %v", path, err)
-		}
-		return data
-	}
-
 	mockGetDeviceResponse := loadMockResponse("get_device_200.json")
 	mockCreateDeviceResponse := loadMockResponse("create_device_200.json")
 
-	// Handler for /api/v0/devices/:id
+	// Handler for /api/v0/devices/:id endpoint
 	mux.HandleFunc("/api/v0/devices/1.1.1.1", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodGet {
-			http.Error(w, fmt.Sprintf("Expected method GET, got %s", r.Method), http.StatusMethodNotAllowed)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		_, err := w.Write(mockGetDeviceResponse)
-		if err != nil {
-			log.Printf("Error writing mockGetDeviceResponse: %v", err)
-			http.Error(w, "Failed to write response", http.StatusInternalServerError)
+		switch r.Method {
+		case http.MethodGet:
+			w.Header().Set("Content-Type", "application/json")
+			_, err := w.Write(mockGetDeviceResponse)
+			if err != nil {
+				log.Printf("Error writing mockGetDeviceResponse: %v", err)
+				http.Error(w, "Failed to write response", http.StatusInternalServerError)
+			}
+		default:
+			http.Error(w, fmt.Sprintf("Method %s not implemented for /api/v0/devices.", r.Method), http.StatusMethodNotAllowed)
 		}
 	})
 
@@ -53,7 +42,7 @@ func init() {
 				http.Error(w, "Failed to write response", http.StatusInternalServerError)
 			}
 		default: // Catches GET and any other methods for /api/v0/devices
-			http.Error(w, fmt.Sprintf("Method %s not allowed for /api/v0/devices. Only POST is explicitly handled.", r.Method), http.StatusMethodNotAllowed)
+			http.Error(w, fmt.Sprintf("Method %s not implemented for /api/v0/devices.", r.Method), http.StatusMethodNotAllowed)
 		}
 	})
 }

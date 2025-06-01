@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/jokelyo/go-librenms" // Import the package under test
@@ -34,4 +35,14 @@ func TestMain(m *testing.M) {
 	// Teardown
 	testServer.Close()
 	os.Exit(code)
+}
+
+// Helper function to load mock JSON responses from the fixtures directory
+func loadMockResponse(filename string) []byte {
+	path := filepath.Join("fixtures", filename)
+	data, err := os.ReadFile(path)
+	if err != nil {
+		log.Fatalf("Failed to read mock response file '%s': %v", path, err)
+	}
+	return data
 }
