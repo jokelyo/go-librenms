@@ -15,6 +15,7 @@ import (
 func init() {
 	mockGetDeviceResponse := loadMockResponse("get_device_200.json")
 	mockCreateDeviceResponse := loadMockResponse("create_device_200.json")
+	mockUpdateDeviceResponse := loadMockResponse("update_device_200.json")
 
 	// Handler for /api/v0/devices/:id endpoint
 	mux.HandleFunc("/api/v0/devices/1.1.1.1", func(w http.ResponseWriter, r *http.Request) {
@@ -24,6 +25,13 @@ func init() {
 			_, err := w.Write(mockGetDeviceResponse)
 			if err != nil {
 				log.Printf("Error writing mockGetDeviceResponse: %v", err)
+				http.Error(w, "Failed to write response", http.StatusInternalServerError)
+			}
+		case http.MethodPatch:
+			w.Header().Set("Content-Type", "application/json")
+			_, err := w.Write(mockUpdateDeviceResponse)
+			if err != nil {
+				log.Printf("Error writing mockUpdateDeviceResponse: %v", err)
 				http.Error(w, "Failed to write response", http.StatusInternalServerError)
 			}
 		default:
@@ -99,4 +107,22 @@ func TestClient_CreateDevice(t *testing.T) {
 	// Verify that SNMPCommunity is not empty
 	r.NotEmpty(deviceInResponse.Community, "Expected SNMPCommunity to be set in the response")
 	r.Equal("public", *deviceInResponse.Community, "Expected SNMPCommunity 'public' in response")
+}
+
+func TestClient_UpdateDevice(t *testing.T) {
+	r := require.New(t)
+
+	r.NotNil(testAPIClient, "Global testAPIClient should be initialized")
+
+	payload := &librenms.DeviceUpdateRequest{
+		Field: []string{"hardware", "port_association_mode"},
+		Value: []any{"New Hardware", 2},
+	}
+	deviceResp, err := testAPIClient.UpdateDevice("1.1.1.1", payload)
+
+	r.NoError(err, "GetDevice returned an error")
+	r.NotNil(deviceResp, "GetDevice response is nil")
+
+	r.Equal("ok", deviceResp.Status, "Expected status 'ok'")
+	r.Equal("Device fields have been updated", deviceResp.Message, "Update message mismatch")
 }

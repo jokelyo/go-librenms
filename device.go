@@ -94,6 +94,12 @@ type (
 		Transport           string `json:"transport,omitempty"`
 	}
 
+	// DeviceUpdateRequest represents the request body for updating a device in LibreNMS.
+	DeviceUpdateRequest struct {
+		Field []string `json:"field"`
+		Value []any    `json:"value"`
+	}
+
 	// DeviceResponse represents a response containing a list of devices from the LibreNMS API.
 	DeviceResponse struct {
 		BaseResponse
@@ -102,6 +108,8 @@ type (
 )
 
 // CreateDevice creates a device by hostname/IP.
+//
+// Documentation: https://docs.librenms.org/API/Devices/#add_device
 func (c *Client) CreateDevice(payload *DeviceCreateRequest) (*DeviceResponse, error) {
 	req, err := c.newRequest(http.MethodPost, "devices/", payload, nil)
 	if err != nil {
@@ -113,6 +121,8 @@ func (c *Client) CreateDevice(payload *DeviceCreateRequest) (*DeviceResponse, er
 }
 
 // GetDevice retrieves a device by its ID or hostname from the LibreNMS API.
+//
+// Documentation: https://docs.librenms.org/API/Devices/#get_device
 func (c *Client) GetDevice(identifier string) (*DeviceResponse, error) {
 	req, err := c.newRequest(http.MethodGet, "devices/"+identifier, nil, nil)
 	if err != nil {
@@ -121,4 +131,17 @@ func (c *Client) GetDevice(identifier string) (*DeviceResponse, error) {
 	deviceResp := new(DeviceResponse)
 	err = c.do(req, deviceResp)
 	return deviceResp, err
+}
+
+// UpdateDevice updates a device by hostname/IP.
+//
+// Documentation: https://docs.librenms.org/API/Devices/#update_device_field
+func (c *Client) UpdateDevice(identifier string, payload *DeviceUpdateRequest) (*BaseResponse, error) {
+	req, err := c.newRequest(http.MethodPatch, "devices/"+identifier, payload, nil)
+	if err != nil {
+		return nil, err
+	}
+	patchResp := new(BaseResponse)
+	err = c.do(req, patchResp)
+	return patchResp, err
 }
