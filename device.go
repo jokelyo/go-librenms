@@ -80,9 +80,9 @@ type (
 		PingFallback        bool   `json:"ping_fallback,omitempty"`
 		PollerGroup         int    `json:"poller_group,omitempty"`
 		Port                int    `json:"port,omitempty"`
-		PortAssocMode       string `json:"port_association_mode,omitempty"`
-		SNMPAuthAlgo        string `json:"authalgo,omitempty"`  // MD5, SHA, SHA-224, SHA-256, SHA384, SHA-512
-		SNMPAuthLevel       string `json:"authlevel,omitempty"` // noAuthNoPriv, authNoPriv, authPriv
+		PortAssocMode       int    `json:"port_association_mode,omitempty"` // ifIndex(1), ifName(2), ifDescr(3), ifAlias(4)
+		SNMPAuthAlgo        string `json:"authalgo,omitempty"`              // MD5, SHA, SHA-224, SHA-256, SHA384, SHA-512
+		SNMPAuthLevel       string `json:"authlevel,omitempty"`             // noAuthNoPriv, authNoPriv, authPriv
 		SNMPAuthName        string `json:"authname,omitempty"`
 		SNMPAuthPass        string `json:"authpass,omitempty"`
 		SNMPCrytoAlgo       string `json:"cryptoalgo,omitempty"` // DES, AES, AES-192, AES-256, AES-256-C
