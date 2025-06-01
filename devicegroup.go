@@ -16,21 +16,20 @@ const (
 type (
 	// DeviceGroup represents a device group in LibreNMS.
 	DeviceGroup struct {
-		ID          int                      `json:"id" tfsdk:"id"`
-		Name        string                   `json:"name" tfsdk:"name"`
-		Description *string                  `json:"desc" tfsdk:"description"`
-		Devices     []int                    `json:"-" tfsdk:"devices"` // Used in the Terraform provider
-		Pattern     *string                  `json:"pattern" tfsdk:"-"`
-		Rules       DeviceGroupRuleContainer `json:"rules" tfsdk:"rules"`
-		Type        string                   `json:"type" tfsdk:"type"`
+		ID          int                      `json:"id"`
+		Name        string                   `json:"name"`
+		Description *string                  `json:"desc"`
+		Pattern     *string                  `json:"pattern"`
+		Rules       DeviceGroupRuleContainer `json:"rules"`
+		Type        string                   `json:"type"`
 	}
 
 	// DeviceGroupRuleContainer represents the top-level container for device group rules.
 	DeviceGroupRuleContainer struct {
-		Condition string            `json:"condition" tfsdk:"condition"`
-		Joins     [][]string        `json:"joins" tfsdk:"joins"`
-		Rules     []DeviceGroupRule `json:"rules" tfsdk:"rules"`
-		Valid     bool              `json:"valid" tfsdk:"valid"`
+		Condition string            `json:"condition"`
+		Joins     [][]string        `json:"joins"`
+		Rules     []DeviceGroupRule `json:"rules"`
+		Valid     bool              `json:"valid""`
 	}
 
 	// DeviceGroupRule represents a rule within a device group. This is a recursive structure.
@@ -39,14 +38,14 @@ type (
 	// A terminal rule defines id, field, type, input, operator, and value.
 	// A non-terminal rule defines condition and a list of rules.
 	DeviceGroupRule struct {
-		ID        string            `json:"id,omitempty" tfsdk:"id"`
-		Condition string            `json:"condition,omitempty" tfsdk:"condition"`
-		Field     string            `json:"field,omitempty" tfsdk:"field"`
-		Input     string            `json:"input,omitempty" tfsdk:"input"`
-		Operator  string            `json:"operator,omitempty" tfsdk:"operator"`
-		Rules     []DeviceGroupRule `json:"rules,omitempty" tfsdk:"rules"`
-		Type      string            `json:"type,omitempty" tfsdk:"type"`
-		Value     string            `json:"value,omitempty" tfsdk:"value"`
+		ID        string            `json:"id,omitempty"`
+		Condition string            `json:"condition,omitempty"`
+		Field     string            `json:"field,omitempty"`
+		Input     string            `json:"input,omitempty"`
+		Operator  string            `json:"operator,omitempty"`
+		Rules     []DeviceGroupRule `json:"rules,omitempty"`
+		Type      string            `json:"type,omitempty"`
+		Value     string            `json:"value,omitempty"`
 	}
 
 	// DeviceGroupCreateRequest represents the request payload for creating a device group.
