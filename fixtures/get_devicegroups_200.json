@@ -1,0 +1,112 @@
+{
+	"status": "ok",
+	"groups": [
+		{
+			"id": 1,
+			"name": "GCP",
+			"desc": null,
+			"type": "dynamic",
+			"rules": {
+				"condition": "AND",
+				"rules": [
+					{
+						"id": "devices.sysDescr",
+						"field": "devices.sysDescr",
+						"type": "string",
+						"input": "text",
+						"operator": "contains",
+						"value": "cloud"
+					}
+				],
+				"valid": true,
+				"joins": []
+			},
+			"pattern": null
+		},
+		{
+			"id": 3,
+			"name": "NestedRules",
+			"desc": null,
+			"type": "dynamic",
+			"rules": {
+				"condition": "OR",
+				"rules": [
+					{
+						"id": "access_points.channel",
+						"field": "access_points.channel",
+						"type": "string",
+						"input": "text",
+						"operator": "equal",
+						"value": "3"
+					},
+					{
+						"id": "access_points.deleted",
+						"field": "access_points.deleted",
+						"type": "string",
+						"input": "text",
+						"operator": "equal",
+						"value": "true"
+					},
+					{
+						"condition": "AND",
+						"rules": [
+							{
+								"id": "access_points.mac_addr",
+								"field": "access_points.mac_addr",
+								"type": "string",
+								"input": "text",
+								"operator": "equal",
+								"value": "1"
+							},
+							{
+								"id": "access_points.accesspoint_id",
+								"field": "access_points.accesspoint_id",
+								"type": "string",
+								"input": "text",
+								"operator": "equal",
+								"value": "3"
+							},
+							{
+								"condition": "AND",
+								"rules": [
+									{
+										"id": "access_points.accesspoint_id",
+										"field": "access_points.accesspoint_id",
+										"type": "string",
+										"input": "text",
+										"operator": "equal",
+										"value": "3"
+									}
+								]
+							}
+						]
+					}
+				],
+				"valid": true,
+				"joins": [
+					[
+						"access_points",
+						"devices.device_id",
+						"access_points.device_id"
+					]
+				]
+			},
+			"pattern": null
+		},
+		{
+			"id": 2,
+			"name": "StaticTest",
+			"desc": null,
+			"type": "static",
+			"rules": {
+				"condition": null,
+				"rules": [],
+				"valid": true,
+				"joins": []
+			},
+			"pattern": null
+		}
+	],
+	"message": "Found 3 device groups",
+	"count": 3
+}
