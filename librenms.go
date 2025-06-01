@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/google/go-querystring/query"
 	"github.com/hashicorp/go-cleanhttp"
 )
 
@@ -199,6 +200,19 @@ func closeBody(body io.ReadCloser) {
 	_ = body.Close()
 }
 
+// parseParams is a helper function that parses the provided value into URL query parameters.
+func parseParams(v any) (*url.Values, error) {
+	if v == nil {
+		return new(url.Values), nil
+	}
+
+	p, err := query.Values(v)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse query parameters: %w", err)
+	}
+	return &p, nil
+}
+
 // MarshalJSON implements the JSON marshaling for the Bool type.
 func (b *Bool) MarshalJSON() ([]byte, error) {
 	if *b {
@@ -209,6 +223,14 @@ func (b *Bool) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements the JSON unmarshalling for the Bool type.
 func (b *Bool) UnmarshalJSON(data []byte) error {
+	// attempt to unmarshal as a boolean first
+	var valueBool bool
+	if err := json.Unmarshal(data, &valueBool); err == nil {
+		*b = Bool(valueBool)
+		return nil
+	}
+
+	// if that fails, try to unmarshal as an integer (0 or 1)
 	var value int
 	if err := json.Unmarshal(data, &value); err != nil {
 		return fmt.Errorf("failed to unmarshal Bool: %w", err)

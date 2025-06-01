@@ -54,7 +54,7 @@ type (
 		Serial                  *string  `json:"serial"`
 		SNMPDisable             Bool     `json:"snmp_disable"`
 		SNMPVersion             string   `json:"snmpver"`
-		Status                  bool     `json:"status"`
+		Status                  Bool     `json:"status"` // /devices returns 0/1, and /devices/:id returns true/false ...
 		StatusReason            string   `json:"status_reason"`
 		SysContact              *string  `json:"sysContact"`
 		SysDescr                *string  `json:"sysDescr"`
@@ -105,6 +105,21 @@ type (
 		BaseResponse
 		Devices []Device `json:"devices"`
 	}
+
+	DevicesQuery struct {
+		DeviceID   int    `url:"device_id,omitempty"`
+		Display    string `url:"display,omitempty"`
+		Hostname   string `url:"hostname,omitempty"`
+		IPv4       string `url:"ipv4,omitempty"`
+		IPv6       string `url:"ipv6,omitempty"`
+		Location   string `url:"location,omitempty"`
+		LocationID int    `url:"location_id,omitempty"`
+		MACAddress string `url:"mac,omitempty"`
+		Order      string `url:"order,omitempty"`
+		OS         string `url:"os,omitempty"`
+		SysName    string `url:"sysName,omitempty"`
+		Type       string `url:"type,omitempty"`
+	}
 )
 
 // CreateDevice creates a device by hostname/IP.
@@ -141,6 +156,25 @@ func (c *Client) GetDevice(identifier string) (*DeviceResponse, error) {
 	if err != nil {
 		return nil, err
 	}
+	deviceResp := new(DeviceResponse)
+	err = c.do(req, deviceResp)
+	return deviceResp, err
+}
+
+// GetDevices retrieves a list of devices from the LibreNMS API.
+//
+// Documentation: https://docs.librenms.org/API/Devices/#list_devices
+func (c *Client) GetDevices(query *DevicesQuery) (*DeviceResponse, error) {
+	params, err := parseParams(query)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := c.newRequest(http.MethodGet, "devices", nil, params)
+	if err != nil {
+		return nil, err
+	}
+
 	deviceResp := new(DeviceResponse)
 	err = c.do(req, deviceResp)
 	return deviceResp, err

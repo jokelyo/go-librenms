@@ -6,14 +6,14 @@ import (
 	"net/http"
 	"testing"
 
-	// Import the package under test
 	"github.com/jokelyo/go-librenms"
-	"github.com/stretchr/testify/require" // Changed from assert to require
+	"github.com/stretchr/testify/require"
 )
 
 // This init function will register handlers for device-related API endpoints.
 func init() {
 	mockGetDeviceResponse := loadMockResponse("get_device_200.json")
+	mockGetDevicesResponse := loadMockResponse("get_devices_200.json")
 	mockCreateDeviceResponse := loadMockResponse("create_device_200.json")
 	mockDeleteDeviceResponse := loadMockResponse("delete_device_200.json")
 	mockUpdateDeviceResponse := loadMockResponse("update_device_200.json")
@@ -44,6 +44,8 @@ func init() {
 		var err error
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
+		case http.MethodGet:
+			_, err = w.Write(mockGetDevicesResponse)
 		case http.MethodPost:
 			_, err = w.Write(mockCreateDeviceResponse)
 		default: // Catches GET and any other methods for /api/v0/devices
@@ -70,6 +72,28 @@ func TestClient_GetDevice(t *testing.T) {
 	r.Equal("ok", deviceResp.Status, "Expected status 'ok'")
 	r.Equal(1, deviceResp.Count, "Expected count 1")
 	r.Len(deviceResp.Devices, 1, "Expected 1 device")
+
+	device := deviceResp.Devices[0]
+	r.Equal(1, device.DeviceID, "Expected DeviceID 1")
+	r.Equal("1.1.1.1", device.Hostname, "Expected Hostname '1.1.1.1'")
+
+	// verify a Bool field unmarshals correctly
+	r.Equal(librenms.Bool(true), device.SNMPDisable, "Expected SNMPDisable true (1)")
+}
+
+func TestClient_GetDevices(t *testing.T) {
+	r := require.New(t)
+
+	r.NotNil(testAPIClient, "Global testAPIClient should be initialized")
+
+	deviceResp, err := testAPIClient.GetDevices(nil)
+
+	r.NoError(err, "GetDevices returned an error")
+	r.NotNil(deviceResp, "GetDevices response is nil")
+
+	r.Equal("ok", deviceResp.Status, "Expected status 'ok'")
+	r.Equal(3, deviceResp.Count, "Expected count 3")
+	r.Len(deviceResp.Devices, 3, "Expected 3 devices")
 
 	device := deviceResp.Devices[0]
 	r.Equal(1, device.DeviceID, "Expected DeviceID 1")

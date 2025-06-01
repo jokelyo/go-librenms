@@ -37,7 +37,7 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-// Helper function to load mock JSON responses from the fixtures directory
+// Helper function to load mock JSON responses from the fixtures directory.
 func loadMockResponse(filename string) []byte {
 	path := filepath.Join("fixtures", filename)
 	data, err := os.ReadFile(path)
