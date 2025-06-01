@@ -129,7 +129,27 @@ func TestClient_CreateDeviceGroup(t *testing.T) {
 	newDeviceGroupRequest := librenms.DeviceGroupCreateRequest{
 		Name:  "Test Group",
 		Rules: func() *string { s := rules.MustJSON(); return &s }(),
-		Type:  "Dynamic",
+		Type:  "dynamic",
+	}
+
+	createResp, err := testAPIClient.CreateDeviceGroup(&newDeviceGroupRequest)
+
+	r.NoError(err, "CreateDeviceGroup returned an error")
+	r.NotNil(createResp, "CreateDeviceGroup response is nil")
+
+	r.Equal("ok", createResp.Status, "Expected status 'ok'")
+	r.Equal(4, createResp.ID, "Expected ID 4")
+}
+
+func TestClient_CreateDeviceGroupStatic(t *testing.T) {
+	r := require.New(t)
+
+	r.NotNil(testAPIClient, "Global testAPIClient should be initialized")
+
+	newDeviceGroupRequest := librenms.DeviceGroupCreateRequest{
+		Name:    "Test Group",
+		Devices: []int{1, 2},
+		Type:    "static",
 	}
 
 	createResp, err := testAPIClient.CreateDeviceGroup(&newDeviceGroupRequest)

@@ -53,11 +53,11 @@ type (
 	// The rules should be a serialized JSON string that matches the DeviceGroupRuleContainer structure.
 	// Define your rules using the DeviceGroupRuleContainer struct and then serialize it using its JSON() method.
 	DeviceGroupCreateRequest struct {
-		Name        string   `json:"name"`
-		Description *string  `json:"desc,omitempty"`
-		Devices     []string `json:"devices,omitempty"`
-		Rules       *string  `json:"rules,omitempty"`
-		Type        string   `json:"type"`
+		Name        string  `json:"name"`
+		Description *string `json:"desc,omitempty"`
+		Devices     []int   `json:"devices,omitempty"`
+		Rules       *string `json:"rules,omitempty"`
+		Type        string  `json:"type"`
 	}
 
 	DeviceGroupUpdateRequest DeviceGroupCreateRequest
