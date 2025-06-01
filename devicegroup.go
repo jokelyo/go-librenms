@@ -19,7 +19,8 @@ type (
 		ID          int                      `json:"id" tfsdk:"id"`
 		Name        string                   `json:"name" tfsdk:"name"`
 		Description *string                  `json:"desc" tfsdk:"description"`
-		Pattern     *string                  `json:"pattern" tfsdk:"pattern"`
+		Devices     []int                    `json:"-" tfsdk:"devices"` // Used in the Terraform provider
+		Pattern     *string                  `json:"pattern" tfsdk:"-"`
 		Rules       DeviceGroupRuleContainer `json:"rules" tfsdk:"rules"`
 		Type        string                   `json:"type" tfsdk:"type"`
 	}
