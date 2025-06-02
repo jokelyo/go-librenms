@@ -13,9 +13,11 @@ import (
 )
 
 const (
-	testServiceID        = 2
-	testEndpointServices = "/api/v0/services"
-	testEndpointService  = "/api/v0/services/2"
+	testServiceDeviceID         = "13"
+	testServiceID               = 2
+	testEndpointServices        = "/api/v0/services"
+	testEndpointService         = "/api/v0/services/2"
+	testEndpointServiceDeviceID = "/api/v0/services/13"
 )
 
 // This init function will register handlers for device-related API endpoints.
@@ -26,18 +28,36 @@ func init() {
 	mockGetServiceMembersResponse := loadMockResponse("get_service_200.json")
 	mockUpdateServiceResponse := loadMockResponse("update_service_200.json")
 
+	// PATCH and DELETE for services/:id expect a service ID.
 	mux.HandleFunc(testEndpointService, func(w http.ResponseWriter, r *http.Request) {
 		var err error
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
 		case http.MethodDelete:
 			_, err = w.Write(mockDeleteServiceResponse)
-		case http.MethodGet:
-			_, err = w.Write(mockGetServiceMembersResponse)
 		case http.MethodPatch:
 			_, err = w.Write(mockUpdateServiceResponse)
 		default:
 			http.Error(w, fmt.Sprintf("Method %s not implemented for %s.", testEndpointService, r.Method), http.StatusMethodNotAllowed)
+			return
+		}
+		if err != nil {
+			log.Printf("Error writing response: %v", err)
+			http.Error(w, "Failed to write response", http.StatusInternalServerError)
+		}
+	})
+
+	// POST and GET for services/:id expect a device ID or hostname.
+	mux.HandleFunc(testEndpointServiceDeviceID, func(w http.ResponseWriter, r *http.Request) {
+		var err error
+		w.Header().Set("Content-Type", "application/json")
+		switch r.Method {
+		case http.MethodGet:
+			_, err = w.Write(mockGetServiceMembersResponse)
+		case http.MethodPost:
+			_, err = w.Write(mockCreateServiceResponse)
+		default:
+			http.Error(w, fmt.Sprintf("Method %s not implemented for %s.", testEndpointServiceDeviceID, r.Method), http.StatusMethodNotAllowed)
 			return
 		}
 		if err != nil {
@@ -52,9 +72,6 @@ func init() {
 		switch r.Method {
 		case http.MethodGet:
 			_, err = w.Write(mockGetServicesResponse)
-		case http.MethodPost:
-			w.WriteHeader(http.StatusCreated)
-			_, err = w.Write(mockCreateServiceResponse)
 		default:
 			http.Error(w, fmt.Sprintf("Method %s not implemented for %s.", testEndpointServices, r.Method), http.StatusMethodNotAllowed)
 			return
@@ -109,17 +126,17 @@ func TestClient_GetServicesForHost(t *testing.T) {
 
 	r.NotNil(testAPIClient, "Global testAPIClient should be initialized")
 
-	serviceResp, err := testAPIClient.GetServicesForHost("4")
+	serviceResp, err := testAPIClient.GetServicesForHost(testServiceDeviceID)
 
 	r.NoError(err, "GetServicesForHost returned an error")
 	r.NotNil(serviceResp, "GetServicesForHost response is nil")
 
 	r.Equal("ok", serviceResp.Status, "Expected status 'ok'")
 	// r.Equal(1, serviceResp.Count, "Expected count 1")
-	r.Len(serviceResp.Services, 1, "Expected 1 services")
+	r.Len(serviceResp.Services, 2, "Expected 2 services")
 
 	service := serviceResp.Services[0]
-	r.Equal(1, service.ID, "Expected Device ID 1")
+	r.Equal(1, service.ID, "Expected Service ID 1")
 }
 
 func TestClient_CreateService(t *testing.T) {
@@ -127,143 +144,21 @@ func TestClient_CreateService(t *testing.T) {
 
 	r.NotNil(testAPIClient, "Global testAPIClient should be initialized")
 
-	// Define the rules for the service
-	rules := librenms.ServiceRuleContainer{
-		Condition: "AND",
-		Rules: []librenms.ServiceRule{
-			{
-				ID:       "devices.sysDescr",
-				Field:    "devices.sysDescr",
-				Type:     "string",
-				Input:    "text",
-				Operator: "contains",
-				Value:    "Linux",
-			},
-		},
-		Joins: make([][]string, 0),
-		Valid: true,
-	}
-
 	newServiceRequest := librenms.ServiceCreateRequest{
-		Name:  "Test Service",
-		Rules: func() *string { s := rules.MustJSON(); return &s }(),
-		Type:  "dynamic",
+		Name:        "Test Service",
+		Description: "This is a test service",
+		IP:          "192.168.1.1",
+		Param:       "-t 10 -c 5",
+		Type:        "ping",
 	}
 
-	createResp, err := testAPIClient.CreateService(&newServiceRequest)
+	createResp, err := testAPIClient.CreateService(testServiceDeviceID, &newServiceRequest)
 
 	r.NoError(err, "CreateService returned an error")
 	r.NotNil(createResp, "CreateService response is nil")
 
 	r.Equal("ok", createResp.Status, "Expected status 'ok'")
-	r.Equal(4, createResp.ID, "Expected ID 4")
-}
-
-func TestClient_CreateServiceNested(t *testing.T) {
-	r := require.New(t)
-
-	r.NotNil(testAPIClient, "Global testAPIClient should be initialized")
-
-	// Define the rules for the service. This definition makes no sense, but it doesn't matter.
-	rules := librenms.ServiceRuleContainer{
-		Condition: "AND",
-		Rules: []librenms.ServiceRule{
-			{
-				Condition: "AND",
-				Rules: []librenms.ServiceRule{
-					{
-						ID:       "devices.sysDescr",
-						Field:    "devices.sysDescr",
-						Type:     "string",
-						Input:    "text",
-						Operator: "contains",
-						Value:    "Linux",
-					},
-					{
-						ID:       "devices.sysDescr",
-						Field:    "devices.sysDescr",
-						Type:     "string",
-						Input:    "text",
-						Operator: "contains",
-						Value:    "Linux",
-					},
-					{
-						ID:       "devices.sysDescr",
-						Field:    "devices.sysDescr",
-						Type:     "string",
-						Input:    "text",
-						Operator: "contains",
-						Value:    "Linux",
-					},
-				},
-			},
-			{
-				Condition: "AND",
-				Rules: []librenms.ServiceRule{
-					{
-						ID:       "devices.sysDescr",
-						Field:    "devices.sysDescr",
-						Type:     "string",
-						Input:    "text",
-						Operator: "contains",
-						Value:    "Linux",
-					},
-					{
-						ID:       "devices.sysDescr",
-						Field:    "devices.sysDescr",
-						Type:     "string",
-						Input:    "text",
-						Operator: "contains",
-						Value:    "Linux",
-					},
-					{
-						ID:       "devices.sysDescr",
-						Field:    "devices.sysDescr",
-						Type:     "string",
-						Input:    "text",
-						Operator: "contains",
-						Value:    "Linux",
-					},
-				},
-			},
-		},
-		Joins: make([][]string, 0),
-		Valid: true,
-	}
-
-	newServiceRequest := librenms.ServiceCreateRequest{
-		Name:  "Test Service",
-		Rules: func() *string { s := rules.MustJSON(); return &s }(),
-		Type:  "dynamic",
-	}
-
-	createResp, err := testAPIClient.CreateService(&newServiceRequest)
-
-	r.NoError(err, "CreateService returned an error")
-	r.NotNil(createResp, "CreateService response is nil")
-
-	r.Equal("ok", createResp.Status, "Expected status 'ok'")
-	r.Equal(4, createResp.ID, "Expected ID 4")
-}
-
-func TestClient_CreateServiceStatic(t *testing.T) {
-	r := require.New(t)
-
-	r.NotNil(testAPIClient, "Global testAPIClient should be initialized")
-
-	newServiceRequest := librenms.ServiceCreateRequest{
-		Name:    "Test Service",
-		Devices: []int{1, 2},
-		Type:    "static",
-	}
-
-	createResp, err := testAPIClient.CreateService(&newServiceRequest)
-
-	r.NoError(err, "CreateService returned an error")
-	r.NotNil(createResp, "CreateService response is nil")
-
-	r.Equal("ok", createResp.Status, "Expected status 'ok'")
-	r.Equal(4, createResp.ID, "Expected ID 4")
+	r.Equal("Service ping has been added to device 2 (#1)", createResp.Message, "Unexpected message")
 }
 
 func TestClient_DeleteService(t *testing.T) {
@@ -284,30 +179,11 @@ func TestClient_UpdateService(t *testing.T) {
 
 	r.NotNil(testAPIClient, "Global testAPIClient should be initialized")
 
-	// Define the rules for the service
-	rules := librenms.ServiceRuleContainer{
-		Condition: "AND",
-		Rules: []librenms.ServiceRule{
-			{
-				ID:       "devices.sysDescr",
-				Field:    "devices.sysDescr",
-				Type:     "string",
-				Input:    "text",
-				Operator: "contains",
-				Value:    "Windows",
-			},
-		},
-		Joins: make([][]string, 0),
-		Valid: true,
-	}
-
 	deviceServiceRequest := librenms.ServiceUpdateRequest{
-		Name:  "Test Service",
-		Rules: func() *string { s := rules.MustJSON(); return &s }(),
-		Type:  "Dynamic",
+		Name: "Fancy Test Service",
 	}
 
-	createResp, err := testAPIClient.UpdateService("4", &deviceServiceRequest)
+	createResp, err := testAPIClient.UpdateService(testServiceID, &deviceServiceRequest)
 
 	r.NoError(err, "UpdateService returned an error")
 	r.NotNil(createResp, "UpdateService response is nil")

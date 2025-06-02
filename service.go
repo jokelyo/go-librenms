@@ -38,13 +38,16 @@ type (
 	}
 
 	// ServiceUpdateRequest represents the request payload for updating a service.
+	//
+	// Only set the fields you want to update. Trying to patch fields that have not changed will
+	// result in an HTTP 500 error.
 	ServiceUpdateRequest struct {
-		Name        string `json:"name,omitempty"`
-		Description string `json:"desc,omitempty"`
-		IP          string `json:"ip,omitempty"`
-		Ignore      Bool   `json:"ignore,omitempty"`
-		Param       string `json:"param,omitempty"`
-		Type        string `json:"type,omitempty"`
+		Name        string `json:"service_name,omitempty"`
+		Description string `json:"service_desc,omitempty"`
+		IP          string `json:"service_ip,omitempty"`
+		Ignore      Bool   `json:"service_ignore,omitempty"`
+		Param       string `json:"service_param,omitempty"`
+		Type        string `json:"service_type,omitempty"`
 	}
 
 	// ServiceResponse is the response structure for services.
@@ -57,8 +60,8 @@ type (
 // CreateService creates a service for the specified device id or hostname.
 //
 // Documentation: https://docs.librenms.org/API/Services/#add_service_for_host
-func (c *Client) CreateService(identifier string, service *ServiceCreateRequest) (*ServiceResponse, error) {
-	req, err := c.newRequest(http.MethodPost, fmt.Sprintf("%s/%s", serviceEndpoint, identifier), service, nil)
+func (c *Client) CreateService(deviceIdentifier string, service *ServiceCreateRequest) (*ServiceResponse, error) {
+	req, err := c.newRequest(http.MethodPost, fmt.Sprintf("%s/%s", serviceEndpoint, deviceIdentifier), service, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -68,12 +71,26 @@ func (c *Client) CreateService(identifier string, service *ServiceCreateRequest)
 	return resp, err
 }
 
+// DeleteService deletes a service by its ID.
+//
+// Documentation: https://docs.librenms.org/API/Services/#delete_service_from_host
+func (c *Client) DeleteService(serviceID int) (*BaseResponse, error) {
+	req, err := c.newRequest(http.MethodDelete, fmt.Sprintf("%s/%d", serviceEndpoint, serviceID), nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := new(BaseResponse)
+	err = c.do(req, resp)
+	return resp, err
+}
+
 // GetService retrieves a service by ID from the LibreNMS API.
 //
 // Similar to GetDeviceGroup, this uses the same endpoint as GetServices, but it returns a
 // modified payload with the single host. This is primarily a convenience function
 // for the Terraform provider.
-func (c *Client) GetService(id int) (*ServiceResponse, error) {
+func (c *Client) GetService(serviceID int) (*ServiceResponse, error) {
 	req, err := c.newRequest(http.MethodGet, serviceEndpoint, nil, nil)
 	if err != nil {
 		return nil, err
@@ -98,7 +115,7 @@ func (c *Client) GetService(id int) (*ServiceResponse, error) {
 	singleServiceResp.Count = 1
 
 	for _, service := range resp.Services {
-		if service.ID == id {
+		if service.ID == serviceID {
 			singleServiceResp.Services = append(singleServiceResp.Services, service)
 			break
 		}
@@ -127,8 +144,8 @@ func (c *Client) GetServices() (*ServiceResponse, error) {
 // At least it's consistent with the device groups endpoint...
 //
 // Documentation: https://docs.librenms.org/API/Services/#get_service_for_host
-func (c *Client) GetServicesForHost(identifier string) (*ServiceResponse, error) {
-	req, err := c.newRequest(http.MethodGet, serviceEndpoint, nil, nil)
+func (c *Client) GetServicesForHost(deviceIdentifier string) (*ServiceResponse, error) {
+	req, err := c.newRequest(http.MethodGet, fmt.Sprint("%s/%s", serviceEndpoint, deviceIdentifier), nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -137,11 +154,11 @@ func (c *Client) GetServicesForHost(identifier string) (*ServiceResponse, error)
 	return resp, err
 }
 
-// UpdateService updates a service for the specified device id or hostname.
+// UpdateService updates a service for the specified service ID.
 //
-// Documentation: https://docs.librenms.org/API/Services/#add_service_for_host
-func (c *Client) UpdateService(identifier string, service *ServiceUpdateRequest) (*ServiceResponse, error) {
-	req, err := c.newRequest(http.MethodPost, fmt.Sprintf("%s/%s", serviceEndpoint, identifier), service, nil)
+// Documentation: https://docs.librenms.org/API/Services/#edit_service_from_host
+func (c *Client) UpdateService(serviceID int, service *ServiceUpdateRequest) (*ServiceResponse, error) {
+	req, err := c.newRequest(http.MethodPatch, fmt.Sprintf("%s/%d", serviceEndpoint, serviceID), service, nil)
 	if err != nil {
 		return nil, err
 	}
