@@ -118,7 +118,7 @@ func TestClient_GetServices(t *testing.T) {
 
 	service := serviceResp.Services[0]
 	r.Equal(1, service.ID, "Expected ServiceID 1")
-	r.Equal("GCP", service.Name, "Expected Service 'GCP'")
+	r.Equal("check https cert", service.Name, "Expected Service name 'check https cert'")
 }
 
 func TestClient_GetServicesForHost(t *testing.T) {
@@ -166,7 +166,7 @@ func TestClient_DeleteService(t *testing.T) {
 
 	r.NotNil(testAPIClient, "Global testAPIClient should be initialized")
 
-	resp, err := testAPIClient.DeleteService("4")
+	resp, err := testAPIClient.DeleteService(testServiceID)
 
 	r.NoError(err, "DeleteService returned an error")
 	r.NotNil(resp, "DeleteService response is nil")

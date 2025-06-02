@@ -149,11 +149,11 @@ func (c *Client) GetDeviceGroup(identifier string) (*DeviceGroupResponse, error)
 	}
 	singleGroupResp.Message = resp.Message
 	singleGroupResp.Status = resp.Status
-	singleGroupResp.Count = 1
 
 	for _, group := range resp.Groups {
 		if group.Name == identifier || strconv.Itoa(group.ID) == identifier {
 			singleGroupResp.Groups = append(singleGroupResp.Groups, group)
+			singleGroupResp.Count = 1
 			break
 		}
 	}
