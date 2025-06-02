@@ -94,7 +94,7 @@ func TestClient_GetService(t *testing.T) {
 	r.NotNil(serviceResp, "GetService response is nil")
 
 	r.Equal("ok", serviceResp.Status, "Expected status 'ok'")
-	// r.Equal(1, serviceResp.Count, "Expected count 1")
+	r.Equal(1, serviceResp.Count, "Expected count 1")
 	r.Len(serviceResp.Services, 1, "Expected 1 services")
 
 	service := serviceResp.Services[0]
@@ -113,7 +113,7 @@ func TestClient_GetServices(t *testing.T) {
 	r.NotNil(serviceResp, "GetServices response is nil")
 
 	r.Equal("ok", serviceResp.Status, "Expected status 'ok'")
-	// r.Equal(3, serviceResp.Count, "Expected count 3") // seems like count is always 1, in v25.5
+	r.Equal(3, serviceResp.Count, "Expected count 3")
 	r.Len(serviceResp.Services, 3, "Expected 3 services")
 
 	service := serviceResp.Services[0]
@@ -132,7 +132,7 @@ func TestClient_GetServicesForHost(t *testing.T) {
 	r.NotNil(serviceResp, "GetServicesForHost response is nil")
 
 	r.Equal("ok", serviceResp.Status, "Expected status 'ok'")
-	// r.Equal(1, serviceResp.Count, "Expected count 1")
+	r.Equal(2, serviceResp.Count, "Expected count 2")
 	r.Len(serviceResp.Services, 2, "Expected 2 services")
 
 	service := serviceResp.Services[0]
