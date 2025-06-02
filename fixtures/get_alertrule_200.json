@@ -1,0 +1,28 @@
+{
+	"count": 1,
+	"rules": [
+		{
+			"builder": "{\"condition\":\"AND\",\"rules\":[{\"id\":\"macros.device_down\",\"field\":\"macros.device_down\",\"type\":\"integer\",\"input\":\"radio\",\"operator\":\"equal\",\"value\":\"1\"},{\"id\":\"devices.status_reason\",\"field\":\"devices.status_reason\",\"type\":\"string\",\"input\":\"text\",\"operator\":\"equal\",\"value\":\"icmp\"}],\"valid\":true}",
+			"devices": [
+				13
+			],
+			"disabled": 0,
+			"extra": "{\"mute\":false,\"count\":\"-1\",\"delay\":300,\"invert\":false,\"interval\":300,\"recovery\":true,\"acknowledgement\":true,\"options\":{\"override_query\":null}}",
+			"groups": [
+				1
+			],
+			"id": 1,
+			"invert_map": 0,
+			"locations": [
+				1
+			],
+			"name": "Device Down! Due to no ICMP response.",
+			"notes": "",
+			"proc": "",
+			"query": "SELECT * FROM devices WHERE (devices.device_id = ?) AND (devices.status = 0 && (devices.disabled = 0 && devices.ignore = 0)) = 1 AND devices.status_reason = \"icmp\"",
+			"rule": "",
+			"severity": "critical"
+		}
+	],
+	"status": "ok"
+}

@@ -35,8 +35,8 @@ type (
 	// DeviceGroupRule represents a rule within a device group. This is a recursive structure.
 	// It can contain nested rules, allowing for complex conditions.
 	//
-	// A terminal rule defines id, field, type, input, operator, and value.
-	// A non-terminal rule defines condition and a list of rules.
+	// A terminal section defines id, field, type, input, operator, and value.
+	// A non-terminal section defines condition and a list of rules.
 	DeviceGroupRule struct {
 		ID        string            `json:"id,omitempty"`
 		Condition string            `json:"condition,omitempty"`
