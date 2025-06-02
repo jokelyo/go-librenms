@@ -52,7 +52,7 @@ type (
 	// AlertRuleUpdateRequest is the request structure for updating an alert rule.
 	AlertRuleUpdateRequest struct {
 		AlertRuleCreateRequest
-		ID int `json:"id"`
+		ID int `json:"rule_id"`
 	}
 
 	// AlertRuleResponse is the response structure for alert rules.
@@ -122,7 +122,7 @@ func (c *Client) GetAlertRules() (*AlertRuleResponse, error) {
 // Documentation: https://docs.librenms.org/API/Alerts/#update_alert_rule
 func (c *Client) UpdateAlertRule(payload *AlertRuleUpdateRequest) (*BaseResponse, error) {
 	if payload.ID < 1 {
-		return nil, fmt.Errorf("ID is required for updating an alert rule")
+		return nil, fmt.Errorf("rule ID is required for updating an alert rule")
 	}
 
 	// as a convenience/hack, add a -1 to Devices if Devices is empty

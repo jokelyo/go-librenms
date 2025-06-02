@@ -161,3 +161,49 @@ func TestClient_UpdateAlertRule(t *testing.T) {
 
 	r.Equal("ok", resp.Status, "Expected status 'ok'")
 }
+
+func TestClient_UpdateAlertRule_EmptyDevices(t *testing.T) {
+	r := require.New(t)
+
+	r.NotNil(testAPIClient, "Global testAPIClient should be initialized")
+
+	// Define the alert rule to create using AlertRuleUpdateRequest
+	payload := librenms.AlertRuleUpdateRequest{
+		ID: testAlertRuleID,
+		AlertRuleCreateRequest: librenms.AlertRuleCreateRequest{
+			Name:     "Test Alert Rule",
+			Notes:    "This is a test alert rule",
+			Disabled: false,
+			Builder:  testBuilderValue,
+		},
+	}
+
+	resp, err := testAPIClient.UpdateAlertRule(&payload)
+
+	r.NoError(err, "UpdateAlertRule returned an error")
+	r.NotNil(resp, "UpdateAlertRule response is nil")
+
+	r.Equal("ok", resp.Status, "Expected status 'ok'")
+}
+
+func TestClient_UpdateAlertRule_MissingID(t *testing.T) {
+	r := require.New(t)
+
+	r.NotNil(testAPIClient, "Global testAPIClient should be initialized")
+
+	// Define the alert rule to create using AlertRuleUpdateRequest
+	payload := librenms.AlertRuleUpdateRequest{
+		AlertRuleCreateRequest: librenms.AlertRuleCreateRequest{
+			Name:     "Test Alert Rule",
+			Notes:    "This is a test alert rule",
+			Devices:  []int{1, 2, 3},
+			Disabled: false,
+			Builder:  testBuilderValue,
+		},
+	}
+
+	_, err := testAPIClient.UpdateAlertRule(&payload)
+
+	r.Error(err, "UpdateAlertRule returned an error")
+	r.Equal("rule ID is required for updating an alert rule", err.Error(), "Unexpected error message for missing ID")
+}
