@@ -1,0 +1,56 @@
+{
+	"count": 1,
+	"services": [
+		[
+			{
+				"device_id": 13,
+				"service_changed": 1748893510,
+				"service_desc": "",
+				"service_disabled": 0,
+				"service_ds": "{}",
+				"service_id": 1,
+				"service_ignore": 0,
+				"service_ip": "34.123.68.95",
+				"service_message": "CRITICAL - Socket timeout after 10 seconds",
+				"service_name": "check https cert",
+				"service_param": "-C 30,14",
+				"service_status": 2,
+				"service_template_id": 0,
+				"service_type": "http"
+			},
+			{
+				"device_id": 13,
+				"service_changed": 1748893510,
+				"service_desc": "asdfasdf",
+				"service_disabled": 0,
+				"service_ds": "{}",
+				"service_id": 2,
+				"service_ignore": 0,
+				"service_ip": "34.123.68.95",
+				"service_message": "Service not yet checked",
+				"service_name": "check other thing",
+				"service_param": "",
+				"service_status": 3,
+				"service_template_id": 0,
+				"service_type": "dhcp"
+			},
+			{
+				"device_id": 2,
+				"service_changed": 1748893558,
+				"service_desc": "",
+				"service_disabled": 0,
+				"service_ds": "{}",
+				"service_id": 3,
+				"service_ignore": 0,
+				"service_ip": "34.27.0.177",
+				"service_message": "Service not yet checked",
+				"service_name": "check another thing",
+				"service_param": "-C 30,14",
+				"service_status": 3,
+				"service_template_id": 0,
+				"service_type": "http"
+			}
+		]
+	],
+	"status": "ok"
+}

@@ -140,6 +140,10 @@ func (c *Client) GetDeviceGroup(identifier string) (*DeviceGroupResponse, error)
 		return resp, err
 	}
 
+	if len(resp.Groups) == 0 {
+		return resp, nil
+	}
+
 	singleGroupResp := &DeviceGroupResponse{
 		Groups: make([]DeviceGroup, 0),
 	}

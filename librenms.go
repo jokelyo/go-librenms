@@ -9,7 +9,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"strconv"
 	"strings"
 
 	"github.com/google/go-querystring/query"
@@ -126,7 +125,6 @@ func (c *Client) newRequest(method, uri string, body any, query *url.Values) (*h
 	// Add query parameters if provided
 	if query != nil && len(*query) > 0 {
 		req.URL.RawQuery = query.Encode()
-		req.Header.Set("Content-Length", strconv.Itoa(len(req.URL.RawQuery)))
 	}
 
 	return req, nil
