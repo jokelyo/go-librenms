@@ -76,8 +76,7 @@ func (c *Client) CreateAlertRule(payload *AlertRuleCreateRequest) (*BaseResponse
 		return nil, err
 	}
 	resp := new(BaseResponse)
-	err = c.do(req, resp)
-	return resp, err
+	return resp, c.do(req, resp)
 }
 
 // DeleteAlertRule deletes a specific alert rule by its ID from the LibreNMS API.
@@ -87,8 +86,7 @@ func (c *Client) DeleteAlertRule(id int) (*BaseResponse, error) {
 		return nil, err
 	}
 	resp := new(BaseResponse)
-	err = c.do(req, resp)
-	return resp, err
+	return resp, c.do(req, resp)
 }
 
 // GetAlertRule retrieves a specific alert rule by its ID from the LibreNMS API.
@@ -100,8 +98,7 @@ func (c *Client) GetAlertRule(id int) (*AlertRuleResponse, error) {
 		return nil, err
 	}
 	resp := new(AlertRuleResponse)
-	err = c.do(req, resp)
-	return resp, err
+	return resp, c.do(req, resp)
 }
 
 // GetAlertRules retrieves all alert rules from the LibreNMS API.
@@ -113,8 +110,7 @@ func (c *Client) GetAlertRules() (*AlertRuleResponse, error) {
 		return nil, err
 	}
 	resp := new(AlertRuleResponse)
-	err = c.do(req, resp)
-	return resp, err
+	return resp, c.do(req, resp)
 }
 
 // UpdateAlertRule updates a specific alert rule in the LibreNMS API.
@@ -135,6 +131,5 @@ func (c *Client) UpdateAlertRule(payload *AlertRuleUpdateRequest) (*BaseResponse
 		return nil, err
 	}
 	resp := new(BaseResponse)
-	err = c.do(req, resp)
-	return resp, err
+	return resp, c.do(req, resp)
 }

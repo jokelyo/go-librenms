@@ -103,8 +103,7 @@ func (c *Client) CreateDeviceGroup(group *DeviceGroupCreateRequest) (*DeviceGrou
 	}
 
 	resp := new(DeviceGroupCreateResponse)
-	err = c.do(req, resp)
-	return resp, err
+	return resp, c.do(req, resp)
 }
 
 // DeleteDeviceGroup deletes a group by its ID or hostname from the LibreNMS API.
@@ -121,8 +120,7 @@ func (c *Client) DeleteDeviceGroup(identifier string) (*BaseResponse, error) {
 		return nil, err
 	}
 	resp := new(BaseResponse)
-	err = c.do(req, resp)
-	return resp, err
+	return resp, c.do(req, resp)
 }
 
 // GetDeviceGroup uses the same endpoint as GetDeviceGroups, but it returns a
@@ -135,8 +133,7 @@ func (c *Client) GetDeviceGroup(identifier string) (*DeviceGroupResponse, error)
 	}
 
 	resp := new(DeviceGroupResponse)
-	err = c.do(req, resp)
-	if err != nil {
+	if err = c.do(req, resp); err != nil {
 		return resp, err
 	}
 
@@ -174,8 +171,7 @@ func (c *Client) GetDeviceGroups() (*DeviceGroupResponse, error) {
 	}
 
 	resp := new(DeviceGroupResponse)
-	err = c.do(req, resp)
-	return resp, err
+	return resp, c.do(req, resp)
 }
 
 // GetDeviceGroupMembers retrieves a list of device group members from the LibreNMS API.
@@ -189,8 +185,7 @@ func (c *Client) GetDeviceGroupMembers(identifier string) (*DeviceGroupMembersRe
 	}
 
 	resp := new(DeviceGroupMembersResponse)
-	err = c.do(req, resp)
-	return resp, err
+	return resp, c.do(req, resp)
 }
 
 // UpdateDeviceGroup updates an existing device group in the LibreNMS API.
@@ -209,8 +204,7 @@ func (c *Client) UpdateDeviceGroup(identifier string, payload *DeviceGroupUpdate
 	}
 
 	resp := new(BaseResponse)
-	err = c.do(req, resp)
-	return resp, err
+	return resp, c.do(req, resp)
 }
 
 // JSON is a helper function that serializes the DeviceGroupRuleContainer to JSON format.

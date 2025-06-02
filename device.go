@@ -137,8 +137,7 @@ func (c *Client) CreateDevice(payload *DeviceCreateRequest) (*DeviceResponse, er
 		return nil, err
 	}
 	deviceResp := new(DeviceResponse)
-	err = c.do(req, deviceResp)
-	return deviceResp, err
+	return deviceResp, c.do(req, deviceResp)
 }
 
 // DeleteDevice deletes a device by its ID or hostname from the LibreNMS API.
@@ -150,8 +149,7 @@ func (c *Client) DeleteDevice(identifier string) (*DeviceResponse, error) {
 		return nil, err
 	}
 	deviceResp := new(DeviceResponse)
-	err = c.do(req, deviceResp)
-	return deviceResp, err
+	return deviceResp, c.do(req, deviceResp)
 }
 
 // GetDevice retrieves a device by its ID or hostname from the LibreNMS API.
@@ -163,8 +161,7 @@ func (c *Client) GetDevice(identifier string) (*DeviceResponse, error) {
 		return nil, err
 	}
 	deviceResp := new(DeviceResponse)
-	err = c.do(req, deviceResp)
-	return deviceResp, err
+	return deviceResp, c.do(req, deviceResp)
 }
 
 // GetDevices retrieves a list of devices from the LibreNMS API.
@@ -182,8 +179,7 @@ func (c *Client) GetDevices(query *DevicesQuery) (*DeviceResponse, error) {
 	}
 
 	deviceResp := new(DeviceResponse)
-	err = c.do(req, deviceResp)
-	return deviceResp, err
+	return deviceResp, c.do(req, deviceResp)
 }
 
 // UpdateDevice updates a device by hostname/IP.
@@ -195,6 +191,5 @@ func (c *Client) UpdateDevice(identifier string, payload *DeviceUpdateRequest) (
 		return nil, err
 	}
 	patchResp := new(BaseResponse)
-	err = c.do(req, patchResp)
-	return patchResp, err
+	return patchResp, c.do(req, patchResp)
 }

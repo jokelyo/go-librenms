@@ -91,8 +91,7 @@ func (c *Client) DeleteService(serviceID int) (*BaseResponse, error) {
 	}
 
 	resp := new(BaseResponse)
-	err = c.do(req, resp)
-	return resp, err
+	return resp, c.do(req, resp)
 }
 
 // GetService retrieves a service by ID from the LibreNMS API.
@@ -202,11 +201,10 @@ func (c *Client) UpdateService(serviceID int, service *ServiceUpdateRequest) (*S
 	}
 
 	resp := new(ServiceResponse)
-	err = c.do(req, resp)
-	return resp, err
+	return resp, c.do(req, resp)
 }
 
-// getServices flattens the slice of slices into a single slice
+// getServices flattens the slice of slices into a single slice.
 func (s *serviceResponse) getServices() []Service {
 	flatServices := make([]Service, 0)
 	for _, serviceList := range s.Services {
