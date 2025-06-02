@@ -124,8 +124,8 @@ func (c *Client) DeleteDeviceGroup(identifier string) (*BaseResponse, error) {
 }
 
 // GetDeviceGroup uses the same endpoint as GetDeviceGroups, but it returns a
-// modified payload with the single host. This is primarily a convenience function
-// for the Terraform provider.
+// modified payload with the single host (if a match is found).
+// This is primarily a convenience function for the Terraform provider.
 func (c *Client) GetDeviceGroup(identifier string) (*DeviceGroupResponse, error) {
 	req, err := c.newRequest(http.MethodGet, deviceGroupEndpoint, nil, nil)
 	if err != nil {
@@ -159,9 +159,6 @@ func (c *Client) GetDeviceGroup(identifier string) (*DeviceGroupResponse, error)
 }
 
 // GetDeviceGroups retrieves a list of device groups from the LibreNMS API.
-//
-// For whatever reason, there is no equivalent GetDeviceGroup endpoint.
-// The /devicegroups/:id endpoint just returns the group members. ¯\_(ツ)_/¯
 //
 // Documentation: https://docs.librenms.org/API/DeviceGroups/#get_devicegroups
 func (c *Client) GetDeviceGroups() (*DeviceGroupResponse, error) {

@@ -11,8 +11,10 @@ const (
 )
 
 type (
-	// Device represents a device in LibreNMS. Pointers are used for fields that may be null.
-	// A custom type Bool is used to represent booleans that are defined as 0/1 by the API.
+	// Device represents a device in LibreNMS.
+	//
+	// Pointers are used for fields that may be null.
+	// A custom type Bool is used to represent booleans that may be defined as 0/1 by the API.
 	Device struct {
 		DeviceID int `json:"device_id"`
 
@@ -60,7 +62,7 @@ type (
 		Serial                  *string  `json:"serial"`
 		SNMPDisable             Bool     `json:"snmp_disable"`
 		SNMPVersion             string   `json:"snmpver"`
-		Status                  Bool     `json:"status"` // /devices returns 0/1, and /devices/:id returns true/false ...
+		Status                  Bool     `json:"status"` // /devices returns 0/1, and /devices/:id returns true/false
 		StatusReason            string   `json:"status_reason"`
 		SysContact              *string  `json:"sysContact"`
 		SysDescr                *string  `json:"sysDescr"`

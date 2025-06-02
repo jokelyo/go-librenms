@@ -16,7 +16,7 @@ type (
 		Changed     int64  `json:"service_changed"`
 		Description string `json:"service_desc"`
 		DeviceID    int    `json:"device_id"`
-		DS          string `json:"service_ds"` // I don't know what this is
+		DS          string `json:"service_ds"`
 		Ignore      Bool   `json:"service_ignore"`
 		IP          string `json:"service_ip"`
 		Message     string `json:"service_message"`
@@ -52,9 +52,10 @@ type (
 
 	// serviceResponse is the internal response structure for services.
 	//
-	// The raw response is returned as a list of service lists, but it seems that all services are always returned
-	// in the first list. This also causes the count to always reflect 1 in the response.
-	// So ... we're going to collapse this into a 1-dimensional slice and update count for easier client handling.
+	// The raw response is returned as a list of service lists, but it seems that
+	// all services are always returned in the first list. This also causes the count
+	// to always reflect 1 in the response. So we're going to collapse this into
+	// a 1-dimensional slice and update count for easier client handling.
 	serviceResponse struct {
 		BaseResponse
 		Services [][]Service `json:"services"`
@@ -97,8 +98,8 @@ func (c *Client) DeleteService(serviceID int) (*BaseResponse, error) {
 // GetService retrieves a service by ID from the LibreNMS API.
 //
 // Similar to GetDeviceGroup, this uses the same endpoint as GetServices, but it returns a
-// modified payload with the single host. This is primarily a convenience function
-// for the Terraform provider.
+// modified payload with the single host (if a match is found).
+// This is primarily a convenience function for the Terraform provider.
 func (c *Client) GetService(serviceID int) (*ServiceResponse, error) {
 	req, err := c.newRequest(http.MethodGet, serviceEndpoint, nil, nil)
 	if err != nil {
@@ -163,10 +164,6 @@ func (c *Client) GetServices() (*ServiceResponse, error) {
 }
 
 // GetServicesForHost retrieves all services for a specific host by ID or name from the LibreNMS API.
-//
-// For whatever reason, there is no equivalent GetService endpoint.
-// The /services/:id endpoint just returns the services for the host identifier. ¯\_(ツ)_/¯
-// At least it's consistent with the device groups endpoint...
 //
 // Documentation: https://docs.librenms.org/API/Services/#get_service_for_host
 func (c *Client) GetServicesForHost(deviceIdentifier string) (*ServiceResponse, error) {
