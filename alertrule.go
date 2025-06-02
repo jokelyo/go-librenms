@@ -16,7 +16,7 @@ type (
 		Builder      string  `json:"builder"`
 		Devices      []int   `json:"devices"`
 		Disabled     Bool    `json:"disabled"`
-		Extra        *string `json:"extra"`
+		Extra        string  `json:"extra"`
 		Groups       []int   `json:"groups"`
 		InvertMap    Bool    `json:"invert_map"`
 		Locations    []int   `json:"locations"`
