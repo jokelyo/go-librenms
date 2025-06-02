@@ -30,9 +30,8 @@ type (
 
 	// AlertRuleCreateRequest is the request structure for creating an alert rule.
 	//
-	// Groups and Locations can be empty, but Devices requires a -1 entry for 'all devices'.
 	AlertRuleCreateRequest struct {
-		Builder      string `json:"builder"`
+		Builder      string `json:"builder"`         // encoded JSON
 		Count        int    `json:"count,omitempty"` // Max Alerts in the UI
 		Delay        string `json:"delay,omitempty"`
 		Devices      []int  `json:"devices"`

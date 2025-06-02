@@ -103,6 +103,9 @@ type (
 	}
 
 	// DeviceUpdateRequest represents the request body for updating a device in LibreNMS.
+	//
+	// The `Field` slice contains the names of the field(s) to update,
+	// and `Data` contains the corresponding values. Only specify the fields you want to update.
 	DeviceUpdateRequest struct {
 		Field []string `json:"field"`
 		Data  []any    `json:"data"`

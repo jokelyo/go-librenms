@@ -58,3 +58,33 @@ func main() {
 		fmt.Println("No device found.")
 	}
 }
+```
+
+### Creating a Device Example
+
+Here's an example of how to create a new device in LibreNMS:
+
+```go
+// Initialize the device creation request
+deviceCreateReq := &librenms.DeviceCreateRequest{
+    Hostname:      "192.168.1.10",
+    Display:       "My New Router",
+    SNMPCommunity: "public",
+    SNMPVersion:   "v2c",
+}
+
+// Create the device
+deviceResp, err := client.CreateDevice(deviceCreateReq)
+if err != nil {
+    log.Fatalf("Error creating device: %v", err)
+}
+
+// Handle the response
+if deviceResp.Status == "ok" {
+    fmt.Printf("Device created successfully! Device ID: %d\n", deviceResp.Devices[0].DeviceID)
+    fmt.Printf("Hostname: %s\n", deviceResp.Devices[0].Hostname)
+} else {
+    fmt.Printf("Failed to create device: %s\n", deviceResp.Message)
+}
+```
+

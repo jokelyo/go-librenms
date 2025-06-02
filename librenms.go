@@ -1,3 +1,13 @@
+// Package librenms provides a client for interacting with the LibreNMS API.
+//
+// The package supports CRUD operations for the following resources, which
+// are used within the Terraform provider at https://github.com/jokelyo/terraform-provider-librenms:
+//   - Alert Rules
+//   - Devices
+//   - Device Groups
+//   - Services
+//
+// LibreNMS API Documentation: https://docs.librenms.org/API/
 package librenms
 
 import (
