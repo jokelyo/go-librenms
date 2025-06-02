@@ -33,7 +33,7 @@ type (
 	// Groups and Locations can be empty, but Devices requires a -1 entry for 'all devices'.
 	AlertRuleCreateRequest struct {
 		Builder      string `json:"builder"`
-		Count        int    `json:"count,omitempty"`
+		Count        int    `json:"count,omitempty"` // Max Alerts in the UI
 		Delay        string `json:"delay,omitempty"`
 		Devices      []int  `json:"devices"`
 		Disabled     Bool   `json:"disabled,omitempty"`
