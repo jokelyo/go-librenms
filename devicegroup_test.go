@@ -21,6 +21,7 @@ func init() {
 	mockCreateDeviceGroupResponse := loadMockResponse("create_devicegroup_201.json")
 	mockDeleteDeviceGroupResponse := loadMockResponse("delete_devicegroup_200.json")
 	mockGetDeviceGroupsResponse := loadMockResponse("get_devicegroups_200.json")
+	mockGetDeviceGroupMembersResponse := loadMockResponse("get_devicegroup_200.json")
 	mockUpdateDeviceGroupResponse := loadMockResponse("update_devicegroup_200.json")
 
 	mux.HandleFunc(testEndpointDeviceGroup, func(w http.ResponseWriter, r *http.Request) {
@@ -30,8 +31,7 @@ func init() {
 		case http.MethodDelete:
 			_, err = w.Write(mockDeleteDeviceGroupResponse)
 		case http.MethodGet:
-			// uses the same response as GetDeviceGroups since there is no relevant /devicegroups/:id endpoint in the API
-			_, err = w.Write(mockGetDeviceGroupsResponse)
+			_, err = w.Write(mockGetDeviceGroupMembersResponse)
 		case http.MethodPatch:
 			_, err = w.Write(mockUpdateDeviceGroupResponse)
 		default:
@@ -81,7 +81,6 @@ func TestClient_GetDeviceGroup(t *testing.T) {
 	group := groupResp.Groups[0]
 	r.Equal(4, group.ID, "Expected GroupID 4")
 	r.Equal("NestedRules", group.Name, "Expected Group 'NestedRules'")
-
 }
 
 func TestClient_GetDeviceGroups(t *testing.T) {
@@ -101,7 +100,24 @@ func TestClient_GetDeviceGroups(t *testing.T) {
 	group := groupResp.Groups[0]
 	r.Equal(1, group.ID, "Expected GroupID 1")
 	r.Equal("GCP", group.Name, "Expected Group 'GCP'")
+}
 
+func TestClient_GetDeviceGroupMembers(t *testing.T) {
+	r := require.New(t)
+
+	r.NotNil(testAPIClient, "Global testAPIClient should be initialized")
+
+	groupResp, err := testAPIClient.GetDeviceGroupMembers("4")
+
+	r.NoError(err, "GetDeviceGroupMembers returned an error")
+	r.NotNil(groupResp, "GetDeviceGroupMembers response is nil")
+
+	r.Equal("ok", groupResp.Status, "Expected status 'ok'")
+	r.Equal(1, groupResp.Count, "Expected count 1")
+	r.Len(groupResp.Devices, 1, "Expected 1 device groups")
+
+	member := groupResp.Devices[0]
+	r.Equal(6, member.ID, "Expected Device ID 6")
 }
 
 func TestClient_CreateDeviceGroup(t *testing.T) {

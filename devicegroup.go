@@ -75,6 +75,17 @@ type (
 		Groups []DeviceGroup `json:"groups"`
 	}
 
+	// DeviceGroupMember represents a member of a device group.
+	DeviceGroupMember struct {
+		ID int `json:"device_id"`
+	}
+
+	// DeviceGroupMembersResponse represents a response containing the members of a device group.
+	DeviceGroupMembersResponse struct {
+		BaseResponse
+		Devices []DeviceGroupMember `json:"devices"`
+	}
+
 	// DeviceGroupCreateResponse represents a creation response.
 	DeviceGroupCreateResponse struct {
 		BaseResponse
@@ -159,6 +170,21 @@ func (c *Client) GetDeviceGroups() (*DeviceGroupResponse, error) {
 	}
 
 	resp := new(DeviceGroupResponse)
+	err = c.do(req, resp)
+	return resp, err
+}
+
+// GetDeviceGroupMembers retrieves a list of device group members from the LibreNMS API.
+// The identifier can be either the group ID or the group name.
+//
+// Documentation: https://docs.librenms.org/API/DeviceGroups/#get_devices_by_group
+func (c *Client) GetDeviceGroupMembers(identifier string) (*DeviceGroupMembersResponse, error) {
+	req, err := c.newRequest(http.MethodGet, fmt.Sprintf("%s/%s", deviceGroupEndpoint, identifier), nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := new(DeviceGroupMembersResponse)
 	err = c.do(req, resp)
 	return resp, err
 }
