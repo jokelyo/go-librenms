@@ -1,0 +1,8 @@
+## 0.1.0
+
+Initial release. Supports CRUD(-ish) ops for these resources (primarily for [terraform-provider-librenms](https://github.com/jokelyo/terraform-provider-librenms)):
+ * Alert Rules
+ * Devices
+ * Device Groups
+ * Locations
+ * Services
