@@ -39,15 +39,15 @@ type (
 
 	// ServiceUpdateRequest represents the request payload for updating a service.
 	//
-	// Only set the fields you want to update. Trying to patch fields that have not changed will
+	// Only set the field(s) you want to update. Trying to patch fields that have not changed will
 	// result in an HTTP 500 error.
 	ServiceUpdateRequest struct {
-		Name        string `json:"service_name,omitempty"`
-		Description string `json:"service_desc,omitempty"`
-		IP          string `json:"service_ip,omitempty"`
-		Ignore      Bool   `json:"service_ignore,omitempty"`
-		Param       string `json:"service_param,omitempty"`
-		Type        string `json:"service_type,omitempty"`
+		Name        *string
+		Description *string
+		IP          *string
+		Ignore      *bool
+		Param       *string
+		Type        *string
 	}
 
 	// serviceResponse is the internal response structure for services.
@@ -192,7 +192,7 @@ func (c *Client) GetServicesForHost(deviceIdentifier string) (*ServiceResponse, 
 //
 // Documentation: https://docs.librenms.org/API/Services/#edit_service_from_host
 func (c *Client) UpdateService(serviceID int, service *ServiceUpdateRequest) (*ServiceResponse, error) {
-	req, err := c.newRequest(http.MethodPatch, fmt.Sprintf("%s/%d", serviceEndpoint, serviceID), service, nil)
+	req, err := c.newRequest(http.MethodPatch, fmt.Sprintf("%s/%d", serviceEndpoint, serviceID), service.payload(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -208,4 +208,77 @@ func (s *serviceResponse) getServices() []Service {
 		flatServices = append(flatServices, serviceList...)
 	}
 	return flatServices
+}
+
+// NewServiceUpdateRequest creates a new ServiceUpdateRequest instance.
+func NewServiceUpdateRequest() *ServiceUpdateRequest {
+	return &ServiceUpdateRequest{}
+}
+
+// SetDescription sets the description of the service in the update request.
+func (r *ServiceUpdateRequest) SetDescription(description string) *ServiceUpdateRequest {
+	r.Description = &description
+	return r
+}
+
+// SetName sets the name of the service in the update request.
+func (r *ServiceUpdateRequest) SetName(name string) *ServiceUpdateRequest {
+	r.Name = &name
+	return r
+}
+
+// SetIP sets the IP address of the service in the update request.
+func (r *ServiceUpdateRequest) SetIP(ip string) *ServiceUpdateRequest {
+	r.IP = &ip
+	return r
+}
+
+// SetIgnore sets the ignore status of the service in the update request.
+func (r *ServiceUpdateRequest) SetIgnore(ignore bool) *ServiceUpdateRequest {
+	r.Ignore = &ignore
+	return r
+}
+
+// SetParam sets the parameter of the service in the update request.
+func (r *ServiceUpdateRequest) SetParam(param string) *ServiceUpdateRequest {
+	r.Param = &param
+	return r
+}
+
+// SetType sets the type of the service in the update request.
+func (r *ServiceUpdateRequest) SetType(serviceType string) *ServiceUpdateRequest {
+	r.Type = &serviceType
+	return r
+}
+
+// payload generates the actual update payload for the request, only including fields that are not nil.
+// This will allow us to send a partial list of fields and still be able to send 'empty' values (avoids
+// `omitempty` issues with the JSON encoder).
+func (r *ServiceUpdateRequest) payload() map[string]interface{} {
+	payload := make(map[string]interface{})
+	if r.Name != nil {
+		payload["service_name"] = *r.Name
+	}
+	if r.Description != nil {
+		payload["service_desc"] = *r.Description
+	}
+	if r.IP != nil {
+		payload["service_ip"] = *r.IP
+	}
+	if r.Ignore != nil {
+		payload["service_ignore"] = func() int {
+			if *r.Ignore {
+				return 1
+			}
+			return 0
+		}()
+	}
+
+	if r.Param != nil {
+		payload["service_param"] = *r.Param
+	}
+	if r.Type != nil {
+		payload["service_type"] = *r.Type
+	}
+	return payload
 }
