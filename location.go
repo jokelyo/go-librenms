@@ -41,7 +41,7 @@ type (
 		Location Location `json:"get_location"`
 	}
 
-	// LocationResponse represents a response containing a list of locations from the LibreNMS API.
+	// LocationsResponse represents a response containing a list of locations from the LibreNMS API.
 	LocationsResponse struct {
 		BaseResponse
 		Locations []Location `json:"locations"`
