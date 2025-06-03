@@ -1,0 +1,22 @@
+{
+	"status": "ok",
+	"locations": [
+		{
+			"id": 1,
+			"location": "Sitting on the Dock of the Bay",
+			"lat": null,
+			"lng": null,
+			"timestamp": "2025-05-31 22:02:39",
+			"fixed_coordinates": 0
+		},
+		{
+			"id": 2,
+			"location": "<null>",
+			"lat": null,
+			"lng": null,
+			"timestamp": "2025-05-31 22:59:34",
+			"fixed_coordinates": 0
+		}
+	],
+	"count": 2
+}

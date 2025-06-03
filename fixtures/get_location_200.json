@@ -1,0 +1,11 @@
+{
+	"status": "ok",
+	"get_location": {
+		"id": 2,
+		"location": "<null>",
+		"lat": null,
+		"lng": null,
+		"timestamp": "2025-06-01T03:59:34.000000Z",
+		"fixed_coordinates": false
+	}
+}
