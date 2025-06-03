@@ -80,11 +80,7 @@ if err != nil {
 }
 
 // Handle the response
-if deviceResp.Status == "ok" {
-    fmt.Printf("Device created successfully! Device ID: %d\n", deviceResp.Devices[0].DeviceID)
-    fmt.Printf("Hostname: %s\n", deviceResp.Devices[0].Hostname)
-} else {
-    fmt.Printf("Failed to create device: %s\n", deviceResp.Message)
-}
+fmt.Printf("Device created successfully! Device ID: %d\n", deviceResp.Devices[0].DeviceID)
+fmt.Printf("Hostname: %s\n", deviceResp.Devices[0].Hostname)
 ```
 
