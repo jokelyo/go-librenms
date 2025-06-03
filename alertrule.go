@@ -11,6 +11,8 @@ const (
 
 type (
 	// AlertRule represents an alert rule in LibreNMS.
+	//
+	// See https://docs.librenms.org/API/Alerts/#add_rule for field descriptions.
 	AlertRule struct {
 		ID           int     `json:"id"`
 		Builder      string  `json:"builder"`
@@ -30,6 +32,7 @@ type (
 
 	// AlertRuleCreateRequest is the request structure for creating an alert rule.
 	//
+	// See https://docs.librenms.org/API/Alerts/#add_rule for field descriptions.
 	AlertRuleCreateRequest struct {
 		Builder      string `json:"builder"`         // encoded JSON
 		Count        int    `json:"count,omitempty"` // Max Alerts in the UI
@@ -45,7 +48,7 @@ type (
 		ProcedureURL string `json:"proc,omitempty"`
 		Query        string `json:"query,omitempty"`
 		Rule         string `json:"rule,omitempty"`
-		Severity     string `json:"severity"`
+		Severity     string `json:"severity"` // ok, warning, critical
 	}
 
 	// AlertRuleUpdateRequest is the request structure for updating an alert rule.
@@ -63,7 +66,7 @@ type (
 
 // CreateAlertRule creates a specific alert rule in the LibreNMS API.
 //
-// Documentation: https://docs.librenms.org/API/Alerts/#get_alert_rule
+// Documentation: https://docs.librenms.org/API/Alerts/#add_rule
 func (c *Client) CreateAlertRule(payload *AlertRuleCreateRequest) (*BaseResponse, error) {
 	// as a convenience/hack, add a -1 to Devices if Devices is empty
 	if len(payload.Devices) == 0 {
@@ -79,6 +82,8 @@ func (c *Client) CreateAlertRule(payload *AlertRuleCreateRequest) (*BaseResponse
 }
 
 // DeleteAlertRule deletes a specific alert rule by its ID from the LibreNMS API.
+//
+// Documentation: https://docs.librenms.org/API/Alerts/#delete_rule
 func (c *Client) DeleteAlertRule(id int) (*BaseResponse, error) {
 	req, err := c.newRequest(http.MethodDelete, fmt.Sprintf("%s/%d", alertRuleEndpoint, id), nil, nil)
 	if err != nil {
@@ -114,7 +119,7 @@ func (c *Client) GetAlertRules() (*AlertRuleResponse, error) {
 
 // UpdateAlertRule updates a specific alert rule in the LibreNMS API.
 //
-// Documentation: https://docs.librenms.org/API/Alerts/#update_alert_rule
+// Documentation: https://docs.librenms.org/API/Alerts/#edit_rule
 func (c *Client) UpdateAlertRule(payload *AlertRuleUpdateRequest) (*BaseResponse, error) {
 	if payload.ID < 1 {
 		return nil, fmt.Errorf("rule ID is required for updating an alert rule")

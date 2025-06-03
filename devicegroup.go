@@ -50,8 +50,9 @@ type (
 
 	// DeviceGroupCreateRequest represents the request payload for creating a device group.
 	//
-	// The rules should be a serialized JSON string that matches the DeviceGroupRuleContainer structure.
-	// Define your rules using the DeviceGroupRuleContainer struct and then serialize it using its JSON() method.
+	// The rules should be a serialized JSON string that matches the DeviceGroupRuleContainer
+	// structure. Define your rules using the DeviceGroupRuleContainer struct and then
+	// serialize it using its JSON() method.
 	DeviceGroupCreateRequest struct {
 		Name        string  `json:"name"`
 		Description *string `json:"desc,omitempty"`
@@ -61,6 +62,10 @@ type (
 	}
 
 	// DeviceGroupUpdateRequest represents the request payload for updating a device group.
+	//
+	// The rules should be a serialized JSON string that matches the DeviceGroupRuleContainer
+	// structure. Define your rules using the DeviceGroupRuleContainer struct and then
+	// serialize it using its JSON() method.
 	DeviceGroupUpdateRequest struct {
 		Name        string  `json:"name,omitempty"`
 		Description *string `json:"desc,omitempty"`

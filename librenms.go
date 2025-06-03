@@ -5,6 +5,7 @@
 //   - Alert Rules
 //   - Devices
 //   - Device Groups
+//   - Locations
 //   - Services
 //
 // LibreNMS API Documentation: https://docs.librenms.org/API/
