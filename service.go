@@ -78,8 +78,7 @@ func (c *Client) CreateService(deviceIdentifier string, service *ServiceCreateRe
 	}
 
 	resp := new(ServiceResponse)
-	err = c.do(req, resp)
-	return resp, err
+	return resp, c.do(req, resp)
 }
 
 // DeleteService deletes a service by its ID.
