@@ -160,10 +160,10 @@ func (c *Client) do(req *http.Request, respObj any) error {
 	}
 
 	resp, err := c.rawDo(req)
-	defer closeBody(resp.Body)
 	if err != nil {
 		return err
 	}
+	defer closeBody(resp.Body)
 
 	switch v := respObj.(type) {
 	case nil:
@@ -191,6 +191,7 @@ func checkResponse(resp *http.Response) error {
 		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			errorResponse.Message = fmt.Sprintf("failed to read response body: %v", err)
+			defer closeBody(resp.Body)
 			return errorResponse
 		}
 

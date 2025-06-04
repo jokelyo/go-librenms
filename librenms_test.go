@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/jokelyo/go-librenms" // Import the package under test
+	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -45,4 +46,34 @@ func loadMockResponse(filename string) []byte {
 		log.Fatalf("Failed to read mock response file '%s': %v", path, err)
 	}
 	return data
+}
+
+func TestClient_InvalidHostProtocol(t *testing.T) {
+	r := require.New(t)
+
+	// Test creating a client with an unresponsive host
+	_, err := librenms.New("localhost:43433/", "test-token")
+	r.Error(err, "Expected error when creating client with unresponsive host")
+	r.ErrorContains(err, "invalid base URL format", "Expected invalid base URL format error")
+}
+
+func TestClient_InvalidHostURI(t *testing.T) {
+	r := require.New(t)
+
+	// Test creating a client with an unresponsive host
+	_, err := librenms.New("http://localhost:48325/api", "test-token")
+	r.Error(err, "Expected error when creating client with unresponsive host")
+	r.ErrorContains(err, "invalid base URL format", "Expected invalid base URL format error")
+}
+
+func TestClient_ConnectionRefused(t *testing.T) {
+	r := require.New(t)
+
+	// Test creating a client with an unresponsive host
+	client, err := librenms.New("http://localhost:48325/", "test-token")
+	r.NoError(err, "Expected no error when creating client with unresponsive host")
+
+	_, err = client.GetDevices(nil)
+	r.Error(err, "Expected error when creating client with unresponsive host")
+	r.ErrorContains(err, "connection refused", "Expected connection refused error")
 }
