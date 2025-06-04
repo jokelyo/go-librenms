@@ -51,7 +51,7 @@ func loadMockResponse(filename string) []byte {
 func TestClient_InvalidHostProtocol(t *testing.T) {
 	r := require.New(t)
 
-	// Test creating a client with an unresponsive host
+	// Test creating a client URL missing the protocol
 	_, err := librenms.New("localhost:43433/", "test-token")
 	r.Error(err, "Expected error when creating client with unresponsive host")
 	r.ErrorContains(err, "invalid base URL format", "Expected invalid base URL format error")
@@ -60,7 +60,7 @@ func TestClient_InvalidHostProtocol(t *testing.T) {
 func TestClient_InvalidHostURI(t *testing.T) {
 	r := require.New(t)
 
-	// Test creating a client with an unresponsive host
+	// Test creating a client with an invalid trailing URI
 	_, err := librenms.New("http://localhost:48325/api", "test-token")
 	r.Error(err, "Expected error when creating client with unresponsive host")
 	r.ErrorContains(err, "invalid base URL format", "Expected invalid base URL format error")
