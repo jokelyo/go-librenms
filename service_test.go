@@ -179,13 +179,13 @@ func TestClient_UpdateService(t *testing.T) {
 
 	r.NotNil(testAPIClient, "Global testAPIClient should be initialized")
 
-	createResp, err := testAPIClient.UpdateService(
+	resp, err := testAPIClient.UpdateService(
 		testServiceID,
 		librenms.NewServiceUpdateRequest().SetName("Fancy Test Service"),
 	)
 
 	r.NoError(err, "UpdateService returned an error")
-	r.NotNil(createResp, "UpdateService response is nil")
+	r.NotNil(resp, "UpdateService response is nil")
 
-	r.Equal("ok", createResp.Status, "Expected status 'ok'")
+	r.Equal("ok", resp.Status, "Expected status 'ok'")
 }

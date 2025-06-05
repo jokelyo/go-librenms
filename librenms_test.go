@@ -53,7 +53,7 @@ func TestClient_InvalidHostProtocol(t *testing.T) {
 
 	// Test creating a client URL missing the protocol
 	_, err := librenms.New("localhost:43433/", "test-token")
-	r.Error(err, "Expected error when creating client with unresponsive host")
+	r.Error(err, "Expected error when creating client with missing baseURL protocol")
 	r.ErrorContains(err, "invalid base URL format", "Expected invalid base URL format error")
 }
 
@@ -62,7 +62,7 @@ func TestClient_InvalidHostURI(t *testing.T) {
 
 	// Test creating a client with an invalid trailing URI
 	_, err := librenms.New("http://localhost:48325/api", "test-token")
-	r.Error(err, "Expected error when creating client with unresponsive host")
+	r.Error(err, "Expected error when creating client with invalid baseURL URI")
 	r.ErrorContains(err, "invalid base URL format", "Expected invalid base URL format error")
 }
 
@@ -74,6 +74,6 @@ func TestClient_ConnectionRefused(t *testing.T) {
 	r.NoError(err, "Expected no error when creating client with unresponsive host")
 
 	_, err = client.GetDevices(nil)
-	r.Error(err, "Expected error when creating client with unresponsive host")
+	r.Error(err, "Expected error when using client with unresponsive host")
 	r.ErrorContains(err, "connection refused", "Expected connection refused error")
 }
