@@ -1,3 +1,6 @@
+## 0.1.3
+ * Set device latitude/longitude fields as Float64
+
 ## 0.1.2
 * Add Float64 type to handle Location attributes; they are sometimes returned as floats and sometimes as strings
 
