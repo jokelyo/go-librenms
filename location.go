@@ -10,8 +10,8 @@ type (
 	Location struct {
 		ID               int     `json:"id"`
 		FixedCoordinates Bool    `json:"fixed_coordinates"`
-		Latitude         float64 `json:"lat"`
-		Longitude        float64 `json:"lng"`
+		Latitude         Float64 `json:"lat"`
+		Longitude        Float64 `json:"lng"`
 		Name             string  `json:"location"`
 		Timestamp        string  `json:"timestamp"`
 	}

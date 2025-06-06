@@ -20,6 +20,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 
 	"github.com/google/go-querystring/query"
@@ -35,6 +36,10 @@ type (
 	// Bool represents a boolean value, used for JSON marshaling. The API
 	// returns some fields as 0/1 instead of true/false, so we use this custom type.
 	Bool bool
+
+	// Float64 represents a float64 value, used for JSON marshaling. The API
+	// returns some fields as strings instead of numbers, so we use this custom type.
+	Float64 float64
 
 	// Client is the main structure for the LibreNMS client.
 	Client struct {
@@ -246,5 +251,34 @@ func (b *Bool) UnmarshalJSON(data []byte) error {
 		return fmt.Errorf("failed to unmarshal Bool: %w", err)
 	}
 	*b = value != 0
+	return nil
+}
+
+// MarshalJSON implements the JSON marshaling for the Float64 type.
+func (f *Float64) MarshalJSON() ([]byte, error) {
+	return []byte(strconv.FormatFloat(float64(*f), 'f', -1, 64)), nil
+}
+
+// UnmarshalJSON implements the JSON unmarshalling for the Float64 type.
+func (f *Float64) UnmarshalJSON(data []byte) error {
+	// attempt to unmarshal as a float64 first
+	var valueFloat64 float64
+	if err := json.Unmarshal(data, &valueFloat64); err == nil {
+		*f = Float64(valueFloat64)
+		return nil
+	}
+
+	// if that fails, try to unmarshal and parse as a string
+	var valueString string
+	if err := json.Unmarshal(data, &valueString); err != nil {
+		return fmt.Errorf("failed to unmarshal Float64: %w", err)
+	}
+
+	value, err := strconv.ParseFloat(valueString, 64)
+	if err != nil {
+		return fmt.Errorf("failed to parse Float64 from string: %w", err)
+	}
+
+	*f = Float64(value)
 	return nil
 }

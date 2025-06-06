@@ -1,11 +1,11 @@
 {
 	"status": "ok",
 	"get_location": {
-		"id": 2,
-		"location": "<null>",
-		"lat": null,
-		"lng": null,
-		"timestamp": "2025-06-01T03:59:34.000000Z",
-		"fixed_coordinates": false
+		"id": 1,
+		"location": "test location",
+		"lat": -99.99999999,
+		"lng": 37.4220648,
+		"timestamp": "2025-06-06T05:38:52.000000Z",
+		"fixed_coordinates": true
 	}
 }
