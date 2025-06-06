@@ -16,7 +16,31 @@
 			"lng": null,
 			"timestamp": "2025-05-31 22:59:34",
 			"fixed_coordinates": 0
+		},
+		{
+			"id": 3,
+			"location": "Google",
+			"lat": "37.42200410",
+			"lng": "-122.08624620",
+			"timestamp": "2025-06-05 23:32:23",
+			"fixed_coordinates": 1
+		},
+		{
+			"id": 4,
+			"location": "Google2",
+			"lat": "38.42200410",
+			"lng": "-122.08624620",
+			"timestamp": "2025-06-05 23:33:20",
+			"fixed_coordinates": 1
+		},
+		{
+			"id": 5,
+			"location": "test location",
+			"lat": "-99.99999999",
+			"lng": "37.42206480",
+			"timestamp": "2025-06-06 00:38:52",
+			"fixed_coordinates": 1
 		}
 	],
-	"count": 2
+	"count": 5
 }
