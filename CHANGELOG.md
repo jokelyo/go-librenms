@@ -1,3 +1,6 @@
+## 0.2.0
+ * Implement alert methods
+
 ## 0.1.3
  * Set device latitude/longitude fields as Float64
 
