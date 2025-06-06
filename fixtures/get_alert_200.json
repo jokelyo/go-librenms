@@ -1,0 +1,22 @@
+{
+	"status": "ok",
+	"alerts": [
+		{
+			"hostname": "34.66.87.253",
+			"id": 9,
+			"device_id": 6,
+			"rule_id": 3,
+			"state": 1,
+			"alerted": 1,
+			"open": 0,
+			"note": null,
+			"timestamp": "2025-06-06 15:58:30",
+			"info": "",
+			"severity": "warning",
+			"name": "Ping Latency (Specific Groups and Locations)",
+			"proc": null,
+			"notes": null
+		}
+	],
+	"count": 1
+}
