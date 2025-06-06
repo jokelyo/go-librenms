@@ -45,8 +45,8 @@ type (
 		LastPollAttempted       *string  `json:"last_poll_attempted"`
 		LastPolled              *string  `json:"last_pulled"`
 		LastPolledTimeTaken     float64  `json:"last_polled_timetaken"`
-		Latitude                *float64 `json:"lat"`
-		Longitude               *float64 `json:"lng"`
+		Latitude                *Float64 `json:"lat"`
+		Longitude               *Float64 `json:"lng"`
 		Location                *string  `json:"location"`
 		LocationID              *int     `json:"location_id"`
 		MaxDepth                *int     `json:"max_depth"`

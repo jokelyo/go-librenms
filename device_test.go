@@ -122,6 +122,12 @@ func TestClient_GetDevices(t *testing.T) {
 
 	// verify a Bool field unmarshals correctly
 	r.Equal(librenms.Bool(true), device.SNMPDisable, "Expected SNMPDisable true (1)")
+
+	// verify a Float64 field unmarshals correctly
+	device = deviceResp.Devices[2]
+	r.Equal(2, device.DeviceID, "Expected DeviceID 2")
+	r.NotNil(device.Latitude, "Expected Latitude to be non-nil")
+	r.Equal(-45.08624620, float64(*device.Latitude), "Expected Latitude -45.0862462")
 }
 
 func TestClient_CreateDevice(t *testing.T) {
