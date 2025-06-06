@@ -117,6 +117,7 @@ type (
 		Devices []Device `json:"devices"`
 	}
 
+	// DevicesQuery represents the query parameters for filtering GetDevices().
 	DevicesQuery struct {
 		DeviceID   int    `url:"device_id,omitempty"`
 		Display    string `url:"display,omitempty"`
