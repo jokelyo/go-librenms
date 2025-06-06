@@ -187,7 +187,7 @@ func (c *Client) GetDevices(query *DevicesQuery) (*DeviceResponse, error) {
 	return deviceResp, c.do(req, deviceResp)
 }
 
-// UpdateDevice updates a device by hostname/IP.
+// UpdateDevice updates a device by its ID or hostname.
 //
 // Documentation: https://docs.librenms.org/API/Devices/#update_device_field
 func (c *Client) UpdateDevice(identifier string, payload *DeviceUpdateRequest) (*BaseResponse, error) {
