@@ -93,6 +93,21 @@ func TestClient_AckAlert(t *testing.T) {
 	r.Equal("ok", resp.Status, "Expected status 'ok'")
 	r.Equal("Alert has been acknowledged", resp.Message, "Expected acknowledgment message")
 }
+
+func TestClient_AckAlert_NilPayload(t *testing.T) {
+	r := require.New(t)
+
+	r.NotNil(testAPIClient, "Global testAPIClient should be initialized")
+
+	resp, err := testAPIClient.AckAlert(testAlertID, nil)
+
+	r.NoError(err, "AckAlert returned an error")
+	r.NotNil(resp, "AckAlert response is nil")
+
+	r.Equal("ok", resp.Status, "Expected status 'ok'")
+	r.Equal("Alert has been acknowledged", resp.Message, "Expected acknowledgment message")
+}
+
 func TestClient_GetAlert(t *testing.T) {
 	r := require.New(t)
 
