@@ -14,7 +14,7 @@ const (
 	testEndpointLocations     = "/api/v0/resources/locations"
 	testEndpointLocation      = "/api/v0/location/2"
 	testEndpointLocationPatch = "/api/v0/locations/2"
-	testEntpointLocationsPost = "/api/v0/locations"
+	testEndpointLocationsPost = "/api/v0/locations"
 )
 
 // This init function will register handlers for location-related API endpoints.
@@ -27,7 +27,7 @@ func init() {
 		http.MethodGet: loadMockResponse("get_location_200.json"),
 	})
 
-	handleEndpoint(testEntpointLocationsPost, mockResponses{
+	handleEndpoint(testEndpointLocationsPost, mockResponses{
 		http.MethodPost: loadMockResponse("create_location_200.json"),
 	})
 
