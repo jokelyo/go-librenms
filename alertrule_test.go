@@ -1,8 +1,6 @@
 package librenms_test
 
 import (
-	"fmt"
-	"log"
 	"net/http"
 	"testing"
 
@@ -19,48 +17,15 @@ const (
 
 // This init function will register handlers for alert rule-related API endpoints.
 func init() {
-	mockGetAlertRuleResponse := loadMockResponse("get_alertrule_200.json")
-	mockGetAlertRulesResponse := loadMockResponse("get_alertrules_200.json")
-	mockCreateAlertRuleResponse := loadMockResponse("create_alertrule_200.json")
-	mockDeleteAlertRuleResponse := loadMockResponse("delete_alertrule_200.json")
-	mockUpdateAlertRuleResponse := loadMockResponse("update_alertrule_200.json")
-
-	mux.HandleFunc(testEndpointAlertRule, func(w http.ResponseWriter, r *http.Request) {
-		var err error
-		w.Header().Set("Content-Type", "application/json")
-		switch r.Method {
-		case http.MethodDelete:
-			_, err = w.Write(mockDeleteAlertRuleResponse)
-		case http.MethodGet:
-			_, err = w.Write(mockGetAlertRuleResponse)
-		default:
-			http.Error(w, fmt.Sprintf("Method %s not implemented for %s.", testEndpointAlertRule, r.Method), http.StatusMethodNotAllowed)
-			return
-		}
-		if err != nil {
-			log.Printf("Error writing response: %v", err)
-			http.Error(w, "Failed to write response", http.StatusInternalServerError)
-		}
+	handleEndpoint(testEndpointAlertRule, mockResponses{
+		http.MethodDelete: loadMockResponse("delete_alertrule_200.json"),
+		http.MethodGet:    loadMockResponse("get_alertrule_200.json"),
 	})
 
-	mux.HandleFunc(testEndpointAlertRules, func(w http.ResponseWriter, r *http.Request) { // Added trailing slash
-		var err error
-		w.Header().Set("Content-Type", "application/json")
-		switch r.Method {
-		case http.MethodGet:
-			_, err = w.Write(mockGetAlertRulesResponse)
-		case http.MethodPost:
-			_, err = w.Write(mockCreateAlertRuleResponse)
-		case http.MethodPut:
-			_, err = w.Write(mockUpdateAlertRuleResponse)
-		default:
-			http.Error(w, fmt.Sprintf("Method %s not implemented for %s.", testEndpointAlertRules, r.Method), http.StatusMethodNotAllowed)
-			return
-		}
-		if err != nil {
-			log.Printf("Error writing response: %v", err)
-			http.Error(w, "Failed to write response", http.StatusInternalServerError)
-		}
+	handleEndpoint(testEndpointAlertRules, mockResponses{
+		http.MethodGet:  loadMockResponse("get_alertrules_200.json"),
+		http.MethodPost: loadMockResponse("create_alertrule_200.json"),
+		http.MethodPut:  loadMockResponse("update_alertrule_200.json"),
 	})
 }
 

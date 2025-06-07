@@ -1,8 +1,6 @@
 package librenms_test
 
 import (
-	"fmt"
-	"log"
 	"net/http"
 	"testing"
 
@@ -16,51 +14,29 @@ const (
 	testEndpointDeviceGroup  = "/api/v0/devicegroups/4"
 )
 
-// This init function will register handlers for device-related API endpoints.
+// This init function will register handlers for devicegroup-related API endpoints.
 func init() {
-	mockCreateDeviceGroupResponse := loadMockResponse("create_devicegroup_201.json")
-	mockDeleteDeviceGroupResponse := loadMockResponse("delete_devicegroup_200.json")
-	mockGetDeviceGroupsResponse := loadMockResponse("get_devicegroups_200.json")
-	mockGetDeviceGroupMembersResponse := loadMockResponse("get_devicegroup_200.json")
-	mockUpdateDeviceGroupResponse := loadMockResponse("update_devicegroup_200.json")
-
-	mux.HandleFunc(testEndpointDeviceGroup, func(w http.ResponseWriter, r *http.Request) {
-		var err error
-		w.Header().Set("Content-Type", "application/json")
-		switch r.Method {
-		case http.MethodDelete:
-			_, err = w.Write(mockDeleteDeviceGroupResponse)
-		case http.MethodGet:
-			_, err = w.Write(mockGetDeviceGroupMembersResponse)
-		case http.MethodPatch:
-			_, err = w.Write(mockUpdateDeviceGroupResponse)
-		default:
-			http.Error(w, fmt.Sprintf("Method %s not implemented for %s.", testEndpointDeviceGroup, r.Method), http.StatusMethodNotAllowed)
-			return
-		}
-		if err != nil {
-			log.Printf("Error writing response: %v", err)
-			http.Error(w, "Failed to write response", http.StatusInternalServerError)
-		}
+	handleEndpoint(testEndpointDeviceGroup, mockResponses{
+		http.MethodDelete: loadMockResponse("delete_devicegroup_200.json"),
+		http.MethodGet:    loadMockResponse("get_devicegroup_200.json"),
+		http.MethodPatch:  loadMockResponse("update_devicegroup_200.json"),
 	})
 
+	// Registering this endpoint outside of handleEndpoint() to mock the HTTP 201 POST response.
 	mux.HandleFunc(testEndpointDeviceGroups, func(w http.ResponseWriter, r *http.Request) {
 		var err error
 		w.Header().Set("Content-Type", "application/json")
 		switch r.Method {
 		case http.MethodGet:
-			_, err = w.Write(mockGetDeviceGroupsResponse)
+			_, err = w.Write(loadMockResponse("get_devicegroups_200.json"))
 		case http.MethodPost:
 			w.WriteHeader(http.StatusCreated)
-			_, err = w.Write(mockCreateDeviceGroupResponse)
+			_, err = w.Write(loadMockResponse("create_devicegroup_201.json"))
 		default:
-			http.Error(w, fmt.Sprintf("Method %s not implemented for %s.", testEndpointDeviceGroups, r.Method), http.StatusMethodNotAllowed)
+			notImplemented(testEndpointDeviceGroups, w, r)
 			return
 		}
-		if err != nil {
-			log.Printf("Error writing response: %v", err)
-			http.Error(w, "Failed to write response", http.StatusInternalServerError)
-		}
+		handleWriteErr(err, w)
 	})
 }
 

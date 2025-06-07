@@ -1,8 +1,6 @@
 package librenms_test
 
 import (
-	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 	"testing"
@@ -20,66 +18,20 @@ const (
 	testEndpointServiceDeviceID = "/api/v0/services/13"
 )
 
-// This init function will register handlers for device-related API endpoints.
+// This init function will register handlers for service-related API endpoints.
 func init() {
-	mockCreateServiceResponse := loadMockResponse("create_service_200.json")
-	mockDeleteServiceResponse := loadMockResponse("delete_service_200.json")
-	mockGetServicesResponse := loadMockResponse("get_services_200.json")
-	mockGetServiceMembersResponse := loadMockResponse("get_service_200.json")
-	mockUpdateServiceResponse := loadMockResponse("update_service_200.json")
-
-	// PATCH and DELETE for services/:id expect a service ID.
-	mux.HandleFunc(testEndpointService, func(w http.ResponseWriter, r *http.Request) {
-		var err error
-		w.Header().Set("Content-Type", "application/json")
-		switch r.Method {
-		case http.MethodDelete:
-			_, err = w.Write(mockDeleteServiceResponse)
-		case http.MethodPatch:
-			_, err = w.Write(mockUpdateServiceResponse)
-		default:
-			http.Error(w, fmt.Sprintf("Method %s not implemented for %s.", testEndpointService, r.Method), http.StatusMethodNotAllowed)
-			return
-		}
-		if err != nil {
-			log.Printf("Error writing response: %v", err)
-			http.Error(w, "Failed to write response", http.StatusInternalServerError)
-		}
+	handleEndpoint(testEndpointService, mockResponses{
+		http.MethodDelete: loadMockResponse("delete_service_200.json"),
+		http.MethodPatch:  loadMockResponse("update_service_200.json"),
 	})
 
-	// POST and GET for services/:id expect a device ID or hostname.
-	mux.HandleFunc(testEndpointServiceDeviceID, func(w http.ResponseWriter, r *http.Request) {
-		var err error
-		w.Header().Set("Content-Type", "application/json")
-		switch r.Method {
-		case http.MethodGet:
-			_, err = w.Write(mockGetServiceMembersResponse)
-		case http.MethodPost:
-			_, err = w.Write(mockCreateServiceResponse)
-		default:
-			http.Error(w, fmt.Sprintf("Method %s not implemented for %s.", testEndpointServiceDeviceID, r.Method), http.StatusMethodNotAllowed)
-			return
-		}
-		if err != nil {
-			log.Printf("Error writing response: %v", err)
-			http.Error(w, "Failed to write response", http.StatusInternalServerError)
-		}
+	handleEndpoint(testEndpointServiceDeviceID, mockResponses{
+		http.MethodGet:  loadMockResponse("get_service_200.json"),
+		http.MethodPost: loadMockResponse("create_service_200.json"),
 	})
 
-	mux.HandleFunc(testEndpointServices, func(w http.ResponseWriter, r *http.Request) {
-		var err error
-		w.Header().Set("Content-Type", "application/json")
-		switch r.Method {
-		case http.MethodGet:
-			_, err = w.Write(mockGetServicesResponse)
-		default:
-			http.Error(w, fmt.Sprintf("Method %s not implemented for %s.", testEndpointServices, r.Method), http.StatusMethodNotAllowed)
-			return
-		}
-		if err != nil {
-			log.Printf("Error writing response: %v", err)
-			http.Error(w, "Failed to write response", http.StatusInternalServerError)
-		}
+	handleEndpoint(testEndpointServices, mockResponses{
+		http.MethodGet: loadMockResponse("get_services_200.json"),
 	})
 }
 

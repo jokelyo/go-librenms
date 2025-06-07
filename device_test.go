@@ -1,8 +1,6 @@
 package librenms_test
 
 import (
-	"fmt"
-	"log"
 	"net/http"
 	"testing"
 
@@ -18,65 +16,18 @@ const (
 
 // This init function will register handlers for device-related API endpoints.
 func init() {
-	mockGetDeviceResponse := loadMockResponse("get_device_200.json")
-	mockGetDevicesResponse := loadMockResponse("get_devices_200.json")
-	mockCreateDeviceResponse := loadMockResponse("create_device_200.json")
-	mockDeleteDeviceResponse := loadMockResponse("delete_device_200.json")
-	mockUpdateDeviceResponse := loadMockResponse("update_device_200.json")
-
-	// Handler for /api/v0/devices/:id endpoint
-	mux.HandleFunc(testEndpointDevice, func(w http.ResponseWriter, r *http.Request) {
-		var err error
-		w.Header().Set("Content-Type", "application/json")
-		switch r.Method {
-		case http.MethodDelete:
-			_, err = w.Write(mockDeleteDeviceResponse)
-		case http.MethodGet:
-			_, err = w.Write(mockGetDeviceResponse)
-		case http.MethodPatch:
-			_, err = w.Write(mockUpdateDeviceResponse)
-		default:
-			http.Error(w, fmt.Sprintf("Method %s not implemented for %s.", testEndpointDevice, r.Method), http.StatusMethodNotAllowed)
-			return
-		}
-		if err != nil {
-			log.Printf("Error writing response: %v", err)
-			http.Error(w, "Failed to write response", http.StatusInternalServerError)
-		}
+	handleEndpoint(testEndpointDevice, mockResponses{
+		http.MethodDelete: loadMockResponse("delete_device_200.json"),
+		http.MethodGet:    loadMockResponse("get_device_200.json"),
+		http.MethodPatch:  loadMockResponse("update_device_200.json"),
 	})
 
-	// Handler for the /api/v0/devices/ endpoint
-	mux.HandleFunc(testEndpointDevicesSlash, func(w http.ResponseWriter, r *http.Request) { // Added trailing slash
-		var err error
-		w.Header().Set("Content-Type", "application/json")
-		switch r.Method {
-		case http.MethodPost:
-			_, err = w.Write(mockCreateDeviceResponse)
-		default: // Catches GET and any other methods for /api/v0/devices
-			http.Error(w, fmt.Sprintf("Method %s not implemented for %s.", testEndpointDevicesSlash, r.Method), http.StatusMethodNotAllowed)
-			return
-		}
-		if err != nil {
-			log.Printf("Error writing response: %v", err)
-			http.Error(w, "Failed to write response", http.StatusInternalServerError)
-		}
+	handleEndpoint(testEndpointDevicesSlash, mockResponses{
+		http.MethodPost: loadMockResponse("create_device_200.json"),
 	})
 
-	// Handler for the /api/v0/devices endpoint
-	mux.HandleFunc(testEndpointDevices, func(w http.ResponseWriter, r *http.Request) { // Added trailing slash
-		var err error
-		w.Header().Set("Content-Type", "application/json")
-		switch r.Method {
-		case http.MethodGet:
-			_, err = w.Write(mockGetDevicesResponse)
-		default:
-			http.Error(w, fmt.Sprintf("Method %s not implemented for %s.", testEndpointDevices, r.Method), http.StatusMethodNotAllowed)
-			return
-		}
-		if err != nil {
-			log.Printf("Error writing response: %v", err)
-			http.Error(w, "Failed to write response", http.StatusInternalServerError)
-		}
+	handleEndpoint(testEndpointDevices, mockResponses{
+		http.MethodGet: loadMockResponse("get_devices_200.json"),
 	})
 }
 

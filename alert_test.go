@@ -1,8 +1,6 @@
 package librenms_test
 
 import (
-	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 	"testing"
@@ -19,61 +17,19 @@ const (
 	testEndpointAlertUnmute = "/api/v0/alerts/unmute/9"
 )
 
-// This init function will register handlers for device-related API endpoints.
+// This init function will register handlers for alert-related API endpoints.
 func init() {
-	mockAckAlertResponse := loadMockResponse("ack_alert_200.json")
-	mockGetAlertsResponse := loadMockResponse("get_alerts_200.json")
-	mockGetAlertResponse := loadMockResponse("get_alert_200.json")
-	mockUnmuteAlertResponse := loadMockResponse("unmute_alert_200.json")
-
-	mux.HandleFunc(testEndpointAlerts, func(w http.ResponseWriter, r *http.Request) {
-		var err error
-		w.Header().Set("Content-Type", "application/json")
-		switch r.Method {
-		case http.MethodGet:
-			_, err = w.Write(mockGetAlertsResponse)
-		default:
-			http.Error(w, fmt.Sprintf("Method %s not implemented for %s.", testEndpointAlerts, r.Method), http.StatusMethodNotAllowed)
-			return
-		}
-		if err != nil {
-			log.Printf("Error writing response: %v", err)
-			http.Error(w, "Failed to write response", http.StatusInternalServerError)
-		}
+	handleEndpoint(testEndpointAlerts, mockResponses{
+		http.MethodGet: loadMockResponse("get_alerts_200.json"),
 	})
 
-	mux.HandleFunc(testEndpointAlert, func(w http.ResponseWriter, r *http.Request) {
-		var err error
-		w.Header().Set("Content-Type", "application/json")
-		switch r.Method {
-		case http.MethodGet:
-			_, err = w.Write(mockGetAlertResponse)
-		case http.MethodPut:
-			_, err = w.Write(mockAckAlertResponse)
-		default:
-			http.Error(w, fmt.Sprintf("Method %s not implemented for %s.", testEndpointAlert, r.Method), http.StatusMethodNotAllowed)
-			return
-		}
-		if err != nil {
-			log.Printf("Error writing response: %v", err)
-			http.Error(w, "Failed to write response", http.StatusInternalServerError)
-		}
+	handleEndpoint(testEndpointAlert, mockResponses{
+		http.MethodGet: loadMockResponse("get_alert_200.json"),
+		http.MethodPut: loadMockResponse("ack_alert_200.json"),
 	})
 
-	mux.HandleFunc(testEndpointAlertUnmute, func(w http.ResponseWriter, r *http.Request) {
-		var err error
-		w.Header().Set("Content-Type", "application/json")
-		switch r.Method {
-		case http.MethodPut:
-			_, err = w.Write(mockUnmuteAlertResponse)
-		default:
-			http.Error(w, fmt.Sprintf("Method %s not implemented for %s.", testEndpointAlert, r.Method), http.StatusMethodNotAllowed)
-			return
-		}
-		if err != nil {
-			log.Printf("Error writing response: %v", err)
-			http.Error(w, "Failed to write response", http.StatusInternalServerError)
-		}
+	handleEndpoint(testEndpointAlertUnmute, mockResponses{
+		http.MethodPut: loadMockResponse("unmute_alert_200.json"),
 	})
 }
 

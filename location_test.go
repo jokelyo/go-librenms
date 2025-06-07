@@ -1,8 +1,6 @@
 package librenms_test
 
 import (
-	"fmt"
-	"log"
 	"net/http"
 	"testing"
 
@@ -16,84 +14,26 @@ const (
 	testEndpointLocations     = "/api/v0/resources/locations"
 	testEndpointLocation      = "/api/v0/location/2"
 	testEndpointLocationPatch = "/api/v0/locations/2"
+	testEntpointLocationsPost = "/api/v0/locations"
 )
 
 // This init function will register handlers for location-related API endpoints.
 func init() {
-	mockCreateLocationResponse := loadMockResponse("create_location_200.json")
-	mockUpdateLocationResponse := loadMockResponse("update_location_200.json")
-	mockDeleteLocationResponse := loadMockResponse("delete_location_200.json")
-	mockGetLocationsResponse := loadMockResponse("get_locations_200.json")
-	mockGetLocationResponse := loadMockResponse("get_location_200.json")
-
-	// Handle GET for locations resource
-	mux.HandleFunc(testEndpointLocations, func(w http.ResponseWriter, r *http.Request) {
-		var err error
-		w.Header().Set("Content-Type", "application/json")
-		switch r.Method {
-		case http.MethodGet:
-			_, err = w.Write(mockGetLocationsResponse)
-		default:
-			http.Error(w, fmt.Sprintf("Method %s not implemented for %s.", r.Method, testEndpointLocations), http.StatusMethodNotAllowed)
-			return
-		}
-		if err != nil {
-			log.Printf("Error writing response: %v", err)
-			http.Error(w, "Failed to write response", http.StatusInternalServerError)
-		}
+	handleEndpoint(testEndpointLocations, mockResponses{
+		http.MethodGet: loadMockResponse("get_locations_200.json"),
 	})
 
-	// Handle GET for a specific location
-	mux.HandleFunc(testEndpointLocation, func(w http.ResponseWriter, r *http.Request) {
-		var err error
-		w.Header().Set("Content-Type", "application/json")
-		switch r.Method {
-		case http.MethodGet:
-			_, err = w.Write(mockGetLocationResponse)
-		default:
-			http.Error(w, fmt.Sprintf("Method %s not implemented for %s.", r.Method, testEndpointLocation), http.StatusMethodNotAllowed)
-			return
-		}
-		if err != nil {
-			log.Printf("Error writing response: %v", err)
-			http.Error(w, "Failed to write response", http.StatusInternalServerError)
-		}
+	handleEndpoint(testEndpointLocation, mockResponses{
+		http.MethodGet: loadMockResponse("get_location_200.json"),
 	})
 
-	// Handle POST for creating locations
-	mux.HandleFunc("/api/v0/locations", func(w http.ResponseWriter, r *http.Request) {
-		var err error
-		w.Header().Set("Content-Type", "application/json")
-		switch r.Method {
-		case http.MethodPost:
-			_, err = w.Write(mockCreateLocationResponse)
-		default:
-			http.Error(w, fmt.Sprintf("Method %s not implemented for /api/v0/locations.", r.Method), http.StatusMethodNotAllowed)
-			return
-		}
-		if err != nil {
-			log.Printf("Error writing response: %v", err)
-			http.Error(w, "Failed to write response", http.StatusInternalServerError)
-		}
+	handleEndpoint(testEntpointLocationsPost, mockResponses{
+		http.MethodPost: loadMockResponse("create_location_200.json"),
 	})
 
-	// Handle PATCH and DELETE for specific location
-	mux.HandleFunc(testEndpointLocationPatch, func(w http.ResponseWriter, r *http.Request) {
-		var err error
-		w.Header().Set("Content-Type", "application/json")
-		switch r.Method {
-		case http.MethodPatch:
-			_, err = w.Write(mockUpdateLocationResponse)
-		case http.MethodDelete:
-			_, err = w.Write(mockDeleteLocationResponse)
-		default:
-			http.Error(w, fmt.Sprintf("Method %s not implemented for %s.", r.Method, testEndpointLocationPatch), http.StatusMethodNotAllowed)
-			return
-		}
-		if err != nil {
-			log.Printf("Error writing response: %v", err)
-			http.Error(w, "Failed to write response", http.StatusInternalServerError)
-		}
+	handleEndpoint(testEndpointLocationPatch, mockResponses{
+		http.MethodPatch:  loadMockResponse("update_location_200.json"),
+		http.MethodDelete: loadMockResponse("delete_location_200.json"),
 	})
 }
 
