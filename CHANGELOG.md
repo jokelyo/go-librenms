@@ -1,3 +1,6 @@
+## 0.3.0
+ * Add basic slog logging
+
 ## 0.2.0
  * Implement alert methods
 
