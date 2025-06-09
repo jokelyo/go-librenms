@@ -18,8 +18,11 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
+	"log/slog"
 	"net/http"
 	"net/url"
+	"os"
 	"strconv"
 	"strings"
 
@@ -45,6 +48,7 @@ type (
 	Client struct {
 		baseURL *url.URL
 		client  *http.Client
+		log     *slog.Logger
 		token   string
 	}
 
@@ -68,12 +72,35 @@ func WithHTTPClient(client *http.Client) Option {
 	}
 }
 
+// WithLogger sets a custom logger for the LibreNMS client.
+func WithLogger(logger *slog.Logger) Option {
+	return func(c *Client) {
+		if logger == nil {
+			log.Fatal("logger cannot be nil")
+		}
+		c.log = logger
+	}
+}
+
+// WithLogLevel sets the logging level for the default client logger.
+// The default level is slog.LevelInfo.
+func WithLogLevel(level slog.Level) Option {
+	return func(c *Client) {
+		c.log = slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
+			Level: level,
+		}))
+	}
+}
+
 // New creates a new LibreNMS client with the given base URL and options.
 // The base URL should be in the format 'http[s]://<host>[:port]/'.
 func New(baseURL, token string, opts ...Option) (*Client, error) {
 	c := &Client{
 		token:  token,
 		client: cleanhttp.DefaultPooledClient(),
+		log: slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
+			Level: slog.LevelInfo,
+		})),
 	}
 
 	// Append a trailing slash to the base URL if it doesn't have one.
@@ -117,6 +144,7 @@ func (c *Client) newRequest(method, uri string, body any, query *url.Values) (*h
 			return nil, err
 		}
 	}
+	ctx := context.Background()
 
 	// Parse the URI and construct the full URL
 	fullURL, err := c.baseURL.Parse(uri)
@@ -125,7 +153,7 @@ func (c *Client) newRequest(method, uri string, body any, query *url.Values) (*h
 	}
 
 	// Create a new HTTP request
-	req, err := http.NewRequestWithContext(context.Background(), method, fullURL.String(), buf)
+	req, err := http.NewRequestWithContext(ctx, method, fullURL.String(), buf)
 	if err != nil {
 		return nil, err
 	}
@@ -143,6 +171,7 @@ func (c *Client) newRequest(method, uri string, body any, query *url.Values) (*h
 		req.URL.RawQuery = query.Encode()
 	}
 
+	c.log.LogAttrs(ctx, slog.LevelDebug, "http request", logRequestAttr(req))
 	return req, nil
 }
 
@@ -155,6 +184,7 @@ func (c *Client) rawDo(req *http.Request) (*http.Response, error) {
 		return nil, err
 	}
 
+	c.log.LogAttrs(context.Background(), slog.LevelDebug, "http response", logResponseAttr(resp))
 	return resp, checkResponse(resp)
 }
 
