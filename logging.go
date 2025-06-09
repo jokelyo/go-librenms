@@ -24,5 +24,6 @@ func logResponseAttr(resp *http.Response) slog.Attr {
 	return slog.Group("response",
 		slog.Int("status", resp.StatusCode),
 		slog.String("status_text", resp.Status),
+		slog.String("content_type", resp.Header.Get("Content-Type")),
 	)
 }
