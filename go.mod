@@ -1,6 +1,6 @@
 module github.com/jokelyo/go-librenms
 
-go 1.24.3
+go 1.27.0
 
 require (
 	github.com/google/go-querystring v1.2.0
